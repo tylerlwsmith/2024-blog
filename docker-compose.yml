@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  wordpress:
+    build:
+      dockerfile: ./dockerfiles/wordpress.Dockerfile
+      context: .
+      args:
+        USER_UID: ${USER_UID:-1234}
+        USER_GID: ${USER_GID:-1234}
+    # restart: unless-stopped
+    restart: no
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: ${DB_HOST:-database}
+      WORDPRESS_DB_USER: ${DB_USERNAME:-admin}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-password}
+      WORDPRESS_DB_NAME: ${DB_DATABASE:-wordpress}
+
+      # The following variables are only used during the first container boot.
+      WORDPRESS_URL: ${WORDPRESS_URL:-localhost:8080}
+      WORDPRESS_USERNAME: ${WP_USERNAME:-admin}
+      WORDPRESS_PASSWORD: ${WP_PASSWORD:-password}
+      WORDPRESS_EMAIL: ${WP_EMAIL:-test@example.com}
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      # - ./wp-content/entrypoint.sh:/usr/local/bin/entrypoint-stage2.sh
+
+  database:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-wordpress}
+      MYSQL_USER: ${DB_USERNAME:-admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+volumes:
+  wp-content:
+  database:
