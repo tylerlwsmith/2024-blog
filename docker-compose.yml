@@ -12,11 +12,17 @@ services:
     restart: no
     ports:
       - 8080:80
+    depends_on:
+      - database
     environment:
-      WORDPRESS_DB_HOST: ${DB_HOST:-database}
-      WORDPRESS_DB_USER: ${DB_USERNAME:-admin}
-      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-password}
-      WORDPRESS_DB_NAME: ${DB_DATABASE:-wordpress}
+      DB_HOST: ${DB_HOST:-database}
+      DB_USER: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: ${DB_DATABASE:-wordpress}
+
+      WP_ENV: development
+      WP_HOME: ${WORDPRESS_URL:-localhost:8080}
+      WP_SITEURL: ${WORDPRESS_URL:-localhost:8080}/wp
 
       # The following variables are only used during the first container boot.
       WORDPRESS_URL: ${WORDPRESS_URL:-localhost:8080}
@@ -24,8 +30,8 @@ services:
       WORDPRESS_PASSWORD: ${WP_PASSWORD:-password}
       WORDPRESS_EMAIL: ${WP_EMAIL:-test@example.com}
     volumes:
-      - ./wp-content:/var/www/html/wp-content
-      # - ./wp-content/entrypoint.sh:/usr/local/bin/entrypoint-stage2.sh
+      - ./wordpress:/var/www/html/
+      - ./wordpress/entrypoint.sh:/var/www/html/entrypoint.sh
 
   database:
     image: mysql:8.0
