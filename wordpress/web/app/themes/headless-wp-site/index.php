@@ -12,9 +12,6 @@
  * @package headless-wp-site
  */
 
-// Silence is golden
-exit();
-
 get_header();
 ?>
 

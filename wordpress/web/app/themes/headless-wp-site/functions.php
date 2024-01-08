@@ -58,3 +58,8 @@ function headless_wp_site_setup() {
 }
 add_action( 'after_setup_theme', 'headless_wp_site_setup' );
 
+/**
+ * Custom template tags for this theme.
+ */
+require get_template_directory() . '/inc/template-tags.php';
+
