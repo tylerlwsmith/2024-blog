@@ -67,6 +67,11 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # us to wait to ensure the database is reachable before connecting to it.
 RUN apt-get update && apt-get install -y wait-for-it
 
+# Apache rewrites aren't enabled by default in php:apache despite being an
+# absolutely crucial PHP feature, so we must manually enable them. Reference:
+# https://github.com/docker-library/php/issues/179
+RUN a2enmod rewrite
+
 # Copy and set a custom entrypoint.
 COPY wordpress/entrypoint.sh /var/www/html/entrypoint.sh
 ENTRYPOINT [ "/var/www/html/entrypoint.sh" ]
