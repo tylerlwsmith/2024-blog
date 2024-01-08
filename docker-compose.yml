@@ -1,6 +1,18 @@
 version: '3.1'
 
 services:
+  webapp:
+    build:
+      dockerfile: ./dockerfiles/webapp.Dockerfile
+      context: .
+    restart: no
+    ports:
+      - 3000:3000
+    depends_on:
+      - wordpress
+    volumes:
+      - ./webapp:/srv/app
+
   wordpress:
     build:
       dockerfile: ./dockerfiles/wordpress.Dockerfile
