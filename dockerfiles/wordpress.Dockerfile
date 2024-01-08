@@ -65,7 +65,7 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # MySQL isn't immediately available once its container starts, which can cause
 # WP CLI failures when running ad hoc commands. The wait-for-it package allows
 # us to wait to ensure the database is reachable before connecting to it.
-RUN apt-get update && apt-get install -y wait-for-it 
+RUN apt-get update && apt-get install -y wait-for-it
 
 # Copy and set a custom entrypoint.
 COPY wordpress/entrypoint.sh /var/www/html/entrypoint.sh
