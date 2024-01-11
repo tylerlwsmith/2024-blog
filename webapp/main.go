@@ -8,11 +8,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-)
 
-// type WPPage struct {
-// 	Id int `json:"id"`
-// }
+	"webapp/wp"
+)
 
 func main() {
 	r := mux.NewRouter()
@@ -39,19 +37,29 @@ func main() {
 			return
 		}
 
-		var bodyData []map[string]interface{}
-		json.Unmarshal(bodyStr, &bodyData)
+		////////// START ORIGINAL IMPLEMENTATION
 
-		// https://go.dev/tour/methods/15
-		c := bodyData[0]["content"].(map[string]interface{})
+		// var bodyData []map[string]interface{}
+		// json.Unmarshal(bodyStr, &bodyData)
 
-		// jsonContent, err := json.Marshal(c["rendered"])
-		// if err != nil {
-		// 	fmt.Fprint(w, "Error Marshalling JSON")
-		// 	return
-		// }
+		// // https://go.dev/tour/methods/15
+		// c := bodyData[0]["content"].(map[string]interface{})
 
-		fmt.Fprint(w, c["rendered"])
+		// // jsonContent, err := json.Marshal(c["rendered"])
+		// // if err != nil {
+		// // 	fmt.Fprint(w, "Error Marshalling JSON")
+		// // 	return
+		// // }
+
+		// fmt.Fprint(w, c["rendered"])
+
+		////////// END ORIGINAL IMPLEMENTATION
+
+		posts := []wp.WPPost{}
+		json.Unmarshal(bodyStr, &posts)
+
+		fmt.Fprint(w, posts[0].Title.Rendered)
+		fmt.Fprint(w, posts[0].Content.Rendered)
 	})
 
 	http.ListenAndServe(":3000", r)

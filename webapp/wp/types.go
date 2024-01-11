@@ -2,16 +2,17 @@ package wp
 
 import (
 	"net/url"
+	"strings"
 	"time"
 )
 
 type WPPost struct {
 	Id            int          `json:"id"`
-	Date          time.Time    `json:"date"`
-	DateGmt       time.Time    `json:"date_gmt"`
+	Date          WPTime       `json:"date"`
+	DateGmt       WPTime       `json:"date_gmt"`
 	Guid          WPGuid       `json:"guid"`
-	Modified      time.Time    `json:"modified"`
-	ModifiedGmt   time.Time    `json:"modified_gmt"`
+	Modified      WPTime       `json:"modified"`
+	ModifiedGmt   WPTime       `json:"modified_gmt"`
 	Slug          string       `json:"slug"`
 	Type          string       `json:"type"`
 	Link          url.URL      `json:"url"`
@@ -28,6 +29,21 @@ type WPPost struct {
 	Meta          WPMeta       `json:"meta"`
 	Categories    []int        `json:"categories"`
 	Tags          []int        `json:"tags"`
+}
+
+type WPTime struct {
+	time.Time
+}
+
+// https://core.trac.wordpress.org/ticket/51945
+// https://eli.thegreenplace.net/2020/unmarshaling-time-values-from-json/
+func (t *WPTime) UnmarshalJSON(data []byte) (err error) {
+	stringDate := strings.Trim(string(data), "\"")
+
+	var nt time.Time
+	err = nt.UnmarshalJSON([]byte("\"" + stringDate + "Z\""))
+	t.Time = nt
+	return err
 }
 
 type WPGuid struct {
