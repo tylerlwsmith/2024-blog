@@ -37,12 +37,10 @@ type WPTime struct {
 
 // https://core.trac.wordpress.org/ticket/51945
 // https://eli.thegreenplace.net/2020/unmarshaling-time-values-from-json/
+// https://ukiahsmith.com/blog/improved-golang-unmarshal-json-with-time-and-url/
 func (t *WPTime) UnmarshalJSON(data []byte) (err error) {
-	stringDate := strings.Trim(string(data), "\"")
-
-	var nt time.Time
-	err = nt.UnmarshalJSON([]byte("\"" + stringDate + "Z\""))
-	t.Time = nt
+	RFC3339WithoutTimezone := "2006-01-02T15:04:05"
+	t.Time, err = time.Parse(RFC3339WithoutTimezone, strings.Trim(string(data), "\""))
 	return err
 }
 
