@@ -56,10 +56,18 @@ func main() {
 		////////// END ORIGINAL IMPLEMENTATION
 
 		posts := []wp.WPPost{}
-		json.Unmarshal(bodyStr, &posts)
+		err = json.Unmarshal(bodyStr, &posts)
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error unmarshalling JSON.\n")
+			fmt.Fprint(w, err.Error())
+			return
+		}
 
-		fmt.Fprint(w, posts[0].Title.Rendered)
-		fmt.Fprint(w, posts[0].Content.Rendered)
+		fmt.Fprintln(w, posts[0].Title.Rendered)
+		fmt.Fprintln(w, posts[0].Content.Rendered)
+		fmt.Fprintln(w, posts[0].Date)
+		fmt.Fprintln(w, posts[0].Link.String())
 	})
 
 	http.ListenAndServe(":3000", r)

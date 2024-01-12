@@ -1,6 +1,7 @@
 package wp
 
 import (
+	"encoding/json"
 	"net/url"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ type WPPost struct {
 	ModifiedGmt   WPTime       `json:"modified_gmt"`
 	Slug          string       `json:"slug"`
 	Type          string       `json:"type"`
-	Link          url.URL      `json:"url"`
+	Link          WPURL        `json:"link"`
 	Title         WPRenderable `json:"title"`
 	Content       WPRenderable `json:"content"`
 	Excerpt       WPRenderable `json:"excerpt"`
@@ -44,8 +45,27 @@ func (t *WPTime) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
+type WPURL struct {
+	url.URL
+}
+
+func (u *WPURL) UnmarshalJSON(data []byte) (err error) {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+
+	parsed, err := url.Parse(s)
+	if err != nil {
+		return err
+	}
+
+	u.URL = *parsed
+	return nil
+}
+
 type WPGuid struct {
-	Rendered url.URL `json:"rendered"`
+	Rendered WPURL `json:"rendered"`
 }
 
 type WPRenderable struct {
