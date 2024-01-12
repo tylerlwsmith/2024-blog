@@ -3,7 +3,6 @@ package wp
 import (
 	"encoding/json"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -40,8 +39,12 @@ type WPTime struct {
 // https://eli.thegreenplace.net/2020/unmarshaling-time-values-from-json/
 // https://ukiahsmith.com/blog/improved-golang-unmarshal-json-with-time-and-url/
 func (t *WPTime) UnmarshalJSON(data []byte) (err error) {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
 	RFC3339WithoutTimezone := "2006-01-02T15:04:05"
-	t.Time, err = time.Parse(RFC3339WithoutTimezone, strings.Trim(string(data), "\""))
+	t.Time, err = time.Parse(RFC3339WithoutTimezone, s)
 	return err
 }
 
