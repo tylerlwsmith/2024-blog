@@ -7,9 +7,14 @@
   </head>
   <body>
     <h1>Posts</h1>
+
     <ul>
-      {{ range $p := . }}
-        <li>{{ $p.Title.Rendered }}</li>
+      {{ range . }}
+        <li>
+          <a href="/posts/{{ .Slug }}">
+            {{ .Title.Rendered }}
+          </a>
+        </li>
       {{ end }}
     </ul>
   </body>
