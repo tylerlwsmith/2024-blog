@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	_ "html/template"
+	"html/template"
 	"io"
 	"net/http"
 
@@ -64,10 +64,16 @@ func main() {
 			return
 		}
 
-		fmt.Fprintln(w, posts[0].Title.Rendered)
-		fmt.Fprintln(w, posts[0].Content.Rendered)
-		fmt.Fprintln(w, posts[0].Date)
-		fmt.Fprintln(w, posts[0].Link.String())
+		tmpl, err := template.ParseFiles("templates/post-index.tmpl")
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error loading the template.\n")
+			fmt.Fprint(w, err.Error())
+			return
+		}
+
+		tmpl.Execute(w, posts)
 	})
 
 	http.ListenAndServe(":3000", r)
