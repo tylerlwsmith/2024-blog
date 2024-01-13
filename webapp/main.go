@@ -64,7 +64,11 @@ func main() {
 			return
 		}
 
-		tmpl, err := template.ParseFiles("templates/post-index.tmpl")
+		tmpl, err := template.ParseFiles(
+			"templates/post-index.tmpl",
+			"templates/_header.tmpl",
+			"templates/_footer.tmpl",
+		)
 
 		if err != nil {
 			w.WriteHeader(503)
@@ -72,7 +76,7 @@ func main() {
 			return
 		}
 
-		tmpl.Execute(w, posts)
+		tmpl.ExecuteTemplate(w, "post-index.tmpl", posts)
 	})
 
 	http.ListenAndServe(":3000", r)

@@ -6,6 +6,9 @@
     <title>Document</title>
   </head>
   <body>
+    {{ template "_header.tmpl" . }}
+
+
     <h1>Posts</h1>
 
     <ul>
@@ -20,5 +23,7 @@
         </li>
       {{ end }}
     </ul>
+
+    {{ template "_footer.tmpl" . }}
   </body>
 </html>
