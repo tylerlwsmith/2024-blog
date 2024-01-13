@@ -19,21 +19,22 @@ func main() {
 		res, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "Can't connect to WordPress")
+			fmt.Fprint(w, "Can't connect to WordPress", err.Error())
 			return
 		}
 
-		bodyStr, err := io.ReadAll(res.Body)
-		res.Body.Close()
 		if res.StatusCode > 299 {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "WordPress returned a non-200 status code.")
 			return
 		}
 
+		bodyStr, err := io.ReadAll(res.Body)
+		res.Body.Close()
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error in reading the body of the WordPress response")
+			fmt.Fprint(w, "There was an error in reading the body of the WordPress response\n")
+			fmt.Fprint(w, err.Error())
 			return
 		}
 
@@ -59,8 +60,7 @@ func main() {
 		err = json.Unmarshal(bodyStr, &posts)
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error unmarshalling JSON.\n")
-			fmt.Fprint(w, err.Error())
+			fmt.Fprint(w, "There was an error unmarshalling JSON.\n", err.Error())
 			return
 		}
 
@@ -68,8 +68,7 @@ func main() {
 
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error loading the template.\n")
-			fmt.Fprint(w, err.Error())
+			fmt.Fprint(w, "There was an error loading the template.\n", err.Error())
 			return
 		}
 
