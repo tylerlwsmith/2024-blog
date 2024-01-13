@@ -2,6 +2,7 @@ package wp
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/url"
 	"time"
 )
@@ -72,8 +73,8 @@ type WPGuid struct {
 }
 
 type WPRenderable struct {
-	Rendered  string `json:"rendered"`
-	Protected bool   `json:"protected,omitempty"`
+	Rendered  template.HTML `json:"rendered"`
+	Protected bool          `json:"protected,omitempty"`
 }
 
 type WPMeta struct {
