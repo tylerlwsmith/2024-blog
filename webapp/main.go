@@ -33,17 +33,37 @@ func main() {
 		}(tagResChan, tagErrChan)
 
 		postResp, postErr := <-postResChan, <-postErrChan
-		// tagResp, tagErr := <-postResChan, <-postErrChan
+		tagResp, tagErr := <-tagResChan, <-tagErrChan
 
-		if postErr != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "WordPress failed to return a response.\n", postErr.Error())
-			return
+		// Order is important: all error checking below follows this order.
+		resTypes := []string{"post", "tag"}
+		responses := []*http.Response{postResp, tagResp}
+		resErrs := []error{postErr, tagErr}
+		resErrMsgs := []string{}
+
+		for i, err := range resErrs {
+			if err != nil {
+				resErrMsgs = append(
+					resErrMsgs,
+					fmt.Sprintf("The %v endpoint returned the following error:\n%v", resTypes[i], err),
+				)
+			}
 		}
 
-		if postResp.StatusCode > 299 {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "WordPress returned a non-200 status code.")
+		for i, res := range responses {
+			if res.StatusCode > 299 {
+				resErrMsgs = append(
+					resErrMsgs,
+					fmt.Sprintf("The %v endpoint returned a non-200 status code.\n", resTypes[i]),
+				)
+			}
+		}
+
+		if len(resErrMsgs) > 0 {
+			fmt.Println(resErrMsgs)
+			for _, msg := range resErrMsgs {
+				fmt.Fprint(w, msg)
+			}
 			return
 		}
 
