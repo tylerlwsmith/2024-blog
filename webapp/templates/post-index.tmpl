@@ -1,29 +1,21 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    {{ template "_header.tmpl" . }}
+{{ define "main" }}
+  {{ template "_header.tmpl" . }}
 
 
-    <h1>Posts</h1>
+  <h1>Posts</h1>
 
-    <ul>
-      {{ range . }}
-        <li>
-          <a href="/posts/{{ .Slug }}">
-            {{ .Title.Rendered }}
-          </a>
-          <time datetime="{{ .Date.Format "2006-01-02" }}">
-            {{ .Date.Format "January 2, 2006" }}
-          </time>
-        </li>
-      {{ end }}
-    </ul>
+  <ul>
+    {{ range .Data }}
+      <li>
+        <a href="/posts/{{ .Slug }}">
+          {{ .Title.Rendered }}
+        </a>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">
+          {{ .Date.Format "January 2, 2006" }}
+        </time>
+      </li>
+    {{ end }}
+  </ul>
 
-    {{ template "_footer.tmpl" . }}
-  </body>
-</html>
+  {{ template "_footer.tmpl" . }}
+{{ end }}

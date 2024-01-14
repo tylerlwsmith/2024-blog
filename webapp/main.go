@@ -9,54 +9,42 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"webapp/wp"
+	"webapp/models"
 )
 
 func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		res, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
+		resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "Can't connect to WordPress", err.Error())
+			fmt.Fprint(w, "WordPress failed to return a response.\n", err.Error())
 			return
 		}
 
-		if res.StatusCode > 299 {
+		if resp.StatusCode > 299 {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "WordPress returned a non-200 status code.")
 			return
 		}
 
-		bodyStr, err := io.ReadAll(res.Body)
-		res.Body.Close()
+		bodyStr, err := io.ReadAll(resp.Body)
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error in reading the body of the WordPress response\n")
+			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
 			fmt.Fprint(w, err.Error())
 			return
 		}
 
-		////////// START ORIGINAL IMPLEMENTATION
+		err = resp.Body.Close()
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "The body response could not be closed.\n", err.Error())
+			return
+		}
 
-		// var bodyData []map[string]interface{}
-		// json.Unmarshal(bodyStr, &bodyData)
-
-		// // https://go.dev/tour/methods/15
-		// c := bodyData[0]["content"].(map[string]interface{})
-
-		// // jsonContent, err := json.Marshal(c["rendered"])
-		// // if err != nil {
-		// // 	fmt.Fprint(w, "Error Marshalling JSON")
-		// // 	return
-		// // }
-
-		// fmt.Fprint(w, c["rendered"])
-
-		////////// END ORIGINAL IMPLEMENTATION
-
-		posts := []wp.WPPost{}
+		posts := []models.WPPost{}
 		err = json.Unmarshal(bodyStr, &posts)
 		if err != nil {
 			w.WriteHeader(503)
@@ -66,17 +54,103 @@ func main() {
 
 		tmpl, err := template.ParseFiles(
 			"templates/post-index.tmpl",
+			"templates/_layout.tmpl",
 			"templates/_header.tmpl",
 			"templates/_footer.tmpl",
 		)
 
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error loading the template.\n", err.Error())
+			fmt.Fprint(w, "There was an error parsing the templates.\n", err.Error())
 			return
 		}
 
-		tmpl.ExecuteTemplate(w, "post-index.tmpl", posts)
+		err = tmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+			Title:   "Posts",
+			Request: *r,
+			Data:    posts,
+		})
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+			return
+		}
+	})
+
+	r.HandleFunc("/posts/{slug}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		slug := vars["slug"]
+
+		resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts?slug=" + slug)
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "WordPress failed to return a response.\n", err.Error())
+			return
+		}
+
+		if resp.StatusCode > 299 {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "WordPress returned a non-200 status code.\n")
+		}
+
+		bodyStr, err := io.ReadAll(resp.Body)
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
+			fmt.Fprint(w, err.Error())
+			return
+		}
+
+		err = resp.Body.Close()
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "The body response could not be closed.\n", err.Error())
+			return
+		}
+
+		posts := []models.WPPost{}
+		err = json.Unmarshal(bodyStr, &posts)
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error unmarshalling JSON.\n", err.Error())
+			return
+		}
+
+		if len(posts) == 0 {
+			w.WriteHeader(404)
+			fmt.Fprint(w, "Post not found.\n")
+			fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
+			return
+
+		}
+		p := posts[0]
+
+		tmpl, err := template.ParseFiles(
+			"templates/post-show.tmpl",
+			"templates/_layout.tmpl",
+			"templates/_header.tmpl",
+			"templates/_footer.tmpl",
+		)
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error parsing the templates.\n", err.Error())
+			return
+		}
+
+		err = tmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+			Title:   p.Title.Rendered,
+			Request: *r,
+			Data:    p,
+		})
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+			return
+		}
 	})
 
 	http.ListenAndServe(":3000", r)
