@@ -16,20 +16,38 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
-		if err != nil {
+		postResChan := make(chan *http.Response)
+		postErrChan := make(chan error)
+		go func(rc chan *http.Response, ec chan error) {
+			resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
+			rc <- resp
+			ec <- err
+		}(postResChan, postErrChan)
+
+		tagResChan := make(chan *http.Response)
+		tagErrChan := make(chan error)
+		go func(rc chan *http.Response, ec chan error) {
+			resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/tags")
+			rc <- resp
+			ec <- err
+		}(tagResChan, tagErrChan)
+
+		postResp, postErr := <-postResChan, <-postErrChan
+		// tagResp, tagErr := <-postResChan, <-postErrChan
+
+		if postErr != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "WordPress failed to return a response.\n", err.Error())
+			fmt.Fprint(w, "WordPress failed to return a response.\n", postErr.Error())
 			return
 		}
 
-		if resp.StatusCode > 299 {
+		if postResp.StatusCode > 299 {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "WordPress returned a non-200 status code.")
 			return
 		}
 
-		bodyStr, err := io.ReadAll(resp.Body)
+		bodyStr, err := io.ReadAll(postResp.Body)
 		if err != nil {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
@@ -37,7 +55,7 @@ func main() {
 			return
 		}
 
-		err = resp.Body.Close()
+		err = postResp.Body.Close()
 		if err != nil {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "The body response could not be closed.\n", err.Error())
