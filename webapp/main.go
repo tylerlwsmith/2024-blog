@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
+	"strings"
+	"text/template"
 
 	"github.com/gorilla/mux"
 
+	"webapp/async"
 	"webapp/models"
 )
 
@@ -16,38 +18,32 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		postResChan := make(chan *http.Response)
-		postErrChan := make(chan error)
-		go func(rc chan *http.Response, ec chan error) {
-			resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts")
-			rc <- resp
-			ec <- err
-		}(postResChan, postErrChan)
+		postChan := async.Get("http://wordpress:80/wp-json/wp/v2/posts")
+		tagChan := async.Get("http://wordpress:80/wp-json/wp/v2/tags")
 
-		tagResChan := make(chan *http.Response)
-		tagErrChan := make(chan error)
-		go func(rc chan *http.Response, ec chan error) {
-			resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/tags")
-			rc <- resp
-			ec <- err
-		}(tagResChan, tagErrChan)
-
-		postResp, postErr := <-postResChan, <-postErrChan
-		tagResp, tagErr := <-tagResChan, <-tagErrChan
+		postResp, postErr := (<-postChan).Result()
+		tagResp, tagErr := (<-tagChan).Result()
 
 		// Order is important: all error checking below follows this order.
-		resTypes := []string{"post", "tag"}
-		responses := []*http.Response{postResp, tagResp}
-		resErrs := []error{postErr, tagErr}
+		resTypes := [2]string{"post", "tag"}
+		responses := [2]*http.Response{postResp, tagResp}
+		resErrs := [2]error{postErr, tagErr}
+
 		resErrMsgs := []string{}
 
+		// Body **must** only be closed on respones with no error.
+		// https://stackoverflow.com/a/32819910/7759523
 		for i, err := range resErrs {
-			if err != nil {
-				resErrMsgs = append(
-					resErrMsgs,
-					fmt.Sprintf("The %v endpoint returned the following error:\n%v", resTypes[i], err),
-				)
+			if err == nil {
+				defer responses[i].Body.Close()
+			} else {
+				resErrMsgs = append(resErrMsgs, err.Error())
 			}
+		}
+
+		if len(resErrMsgs) > 0 {
+			fmt.Fprint(w, strings.Join(resErrMsgs[:], "\n"))
+			return
 		}
 
 		for i, res := range responses {
@@ -60,10 +56,7 @@ func main() {
 		}
 
 		if len(resErrMsgs) > 0 {
-			fmt.Println(resErrMsgs)
-			for _, msg := range resErrMsgs {
-				fmt.Fprint(w, msg)
-			}
+			fmt.Fprint(w, strings.Join(resErrMsgs[:], "\n"))
 			return
 		}
 
@@ -72,13 +65,6 @@ func main() {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
 			fmt.Fprint(w, err.Error())
-			return
-		}
-
-		err = postResp.Body.Close()
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "The body response could not be closed.\n", err.Error())
 			return
 		}
 
