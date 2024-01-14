@@ -7,6 +7,16 @@ import (
 	"time"
 )
 
+type WPTag struct {
+	Id          int    `json:"id"`
+	Count       int    `json:"count"`
+	Description string `json:"description"`
+	Link        WPURL  `json:"link"`
+	Name        string `json:"name"`
+	Slug        string `json:"slug"`
+	// There's an excluded "meta" field because I don't know what's in it.
+}
+
 type WPPost struct {
 	Id            int          `json:"id"`
 	Date          WPTime       `json:"date"`
