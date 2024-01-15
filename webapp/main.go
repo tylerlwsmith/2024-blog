@@ -18,11 +18,11 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		postChan := async.Get("http://wordpress:80/wp-json/wp/v2/posts")
-		tagChan := async.Get("http://wordpress:80/wp-json/wp/v2/tags")
+		postReq := async.Get("http://wordpress:80/wp-json/wp/v2/posts")
+		tagReq := async.Get("http://wordpress:80/wp-json/wp/v2/tags")
 
-		postResp, postErr := (<-postChan).Result()
-		tagResp, tagErr := (<-tagChan).Result()
+		postResp, postErr := postReq.AwaitResponse()
+		tagResp, tagErr := tagReq.AwaitResponse()
 
 		// Order is important: all error checking below follows this order.
 		resTypes := [2]string{"post", "tag"}
