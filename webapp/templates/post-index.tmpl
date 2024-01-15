@@ -3,9 +3,8 @@
 
 
   <h1>Posts</h1>
-
   <ul>
-    {{ range .Data }}
+    {{ range (index .Data "posts") }}
       <li>
         <a href="/posts/{{ .Slug }}">
           {{ .Title.Rendered }}
@@ -13,6 +12,16 @@
         <time datetime="{{ .Date.Format "2006-01-02" }}">
           {{ .Date.Format "January 2, 2006" }}
         </time>
+      </li>
+    {{ end }}
+  </ul>
+
+  <h2>Tags</h2>
+  <ul>
+    {{ range (index .Data "tags") }}
+      <li>
+        {{ .Name }}
+        ({{ .Count }})
       </li>
     {{ end }}
   </ul>

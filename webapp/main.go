@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"webapp/async"
+	"webapp/helpers"
 	"webapp/models"
 )
 
@@ -31,7 +32,7 @@ func main() {
 
 		resErrMsgs := []string{}
 
-		// Body **must** only be closed on respones with no error.
+		// Body **must** be closed, but only on respones with no error.
 		// https://stackoverflow.com/a/32819910/7759523
 		for i, err := range resErrs {
 			if err == nil {
@@ -60,19 +61,22 @@ func main() {
 			return
 		}
 
-		bodyStr, err := io.ReadAll(postResp.Body)
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
-			fmt.Fprint(w, err.Error())
-			return
+		posts := []models.WPPost{}
+		tags := []models.WPTag{}
+		postErr = helpers.UnmarshalJsonReader[[]models.WPPost](postResp.Body, &posts)
+		tagErr = helpers.UnmarshalJsonReader[[]models.WPTag](tagResp.Body, &tags)
+
+		for i, err := range []error{postErr, tagErr} {
+			if err != nil {
+				resErrMsgs = append(
+					resErrMsgs,
+					fmt.Sprintf("%v error: %v", resTypes[i], err.Error()),
+				)
+			}
 		}
 
-		posts := []models.WPPost{}
-		err = json.Unmarshal(bodyStr, &posts)
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error unmarshalling JSON.\n", err.Error())
+		if len(resErrMsgs) > 0 {
+			fmt.Fprint(w, strings.Join(resErrMsgs[:], "\n"))
 			return
 		}
 
@@ -92,7 +96,10 @@ func main() {
 		err = tmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   "Posts",
 			Request: *r,
-			Data:    posts,
+			Data: map[string]any{
+				"posts": posts,
+				"tags":  tags,
+			},
 		})
 
 		if err != nil {
