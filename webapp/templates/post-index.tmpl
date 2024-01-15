@@ -20,8 +20,10 @@
   <ul>
     {{ range (index .Data "tags") }}
       <li>
-        {{ .Name }}
-        ({{ .Count }})
+        <a href="/tags/{{ .Slug }}">
+          {{ .Name }}
+          ({{ .Count }})
+        </a>
       </li>
     {{ end }}
   </ul>
