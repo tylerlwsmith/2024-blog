@@ -15,6 +15,10 @@ import (
 	"webapp/models"
 )
 
+var tmplCommon = []string{"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl"}
+var homepageTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-index.tmpl")...))
+var postsTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-show.tmpl")...))
+
 func main() {
 	r := mux.NewRouter()
 
@@ -80,20 +84,7 @@ func main() {
 			return
 		}
 
-		tmpl, err := template.ParseFiles(
-			"templates/post-index.tmpl",
-			"templates/_layout.tmpl",
-			"templates/_header.tmpl",
-			"templates/_footer.tmpl",
-		)
-
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error parsing the templates.\n", err.Error())
-			return
-		}
-
-		err = tmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+		err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   "Posts",
 			Request: *r,
 			Data: map[string]any{
@@ -105,7 +96,6 @@ func main() {
 		if err != nil {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
-			return
 		}
 	})
 
@@ -158,20 +148,7 @@ func main() {
 		}
 		p := posts[0]
 
-		tmpl, err := template.ParseFiles(
-			"templates/post-show.tmpl",
-			"templates/_layout.tmpl",
-			"templates/_header.tmpl",
-			"templates/_footer.tmpl",
-		)
-
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error parsing the templates.\n", err.Error())
-			return
-		}
-
-		err = tmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+		err = postsTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   p.Title.Rendered,
 			Request: *r,
 			Data:    p,
