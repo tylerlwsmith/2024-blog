@@ -1,4 +1,4 @@
-package models
+package wp
 
 import (
 	"encoding/json"
