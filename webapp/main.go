@@ -6,11 +6,11 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/gorilla/mux"
 
-	"webapp/async"
 	"webapp/helpers"
 	"webapp/models"
 )
@@ -23,11 +23,23 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		postReq := async.Get("http://wordpress:80/wp-json/wp/v2/posts")
-		tagReq := async.Get("http://wordpress:80/wp-json/wp/v2/tags")
+		var postResp, tagResp *http.Response
+		var postErr, tagErr error
 
-		postResp, postErr := postReq.AwaitResponse()
-		tagResp, tagErr := tagReq.AwaitResponse()
+		wg := sync.WaitGroup{}
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			postResp, postErr = http.Get("http://wordpress:80/wp-json/wp/v2/posts")
+		}()
+
+		go func() {
+			defer wg.Done()
+			tagResp, tagErr = http.Get("http://wordpress:80/wp-json/wp/v2/tags")
+		}()
+
+		wg.Wait()
 
 		// Order is important: all error checking below follows this order.
 		resTypes := [2]string{"post", "tag"}
