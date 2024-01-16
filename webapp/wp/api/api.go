@@ -34,6 +34,6 @@ func GetPosts() (posts []wp.WPPost, err error) {
 
 func GetTags() (tags []wp.WPTag, err error) {
 	tags = []wp.WPTag{}
-	err = unmarshalAPIRequest[[]wp.WPTag]("http://wordpress:80/wp-json/wp/v2/posts", &tags)
+	err = unmarshalAPIRequest[[]wp.WPTag]("http://wordpress:80/wp-json/wp/v2/tags", &tags)
 	return tags, err
 }
