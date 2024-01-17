@@ -3,25 +3,78 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"reflect"
+	"strings"
 
 	"webapp/wp"
 )
 
+type query map[string]any
+
 type apiRequest[T any] struct {
 	endpoint string
-	query    map[string]any
+	query    query
 }
 
 func newRequest[T any](url string) *apiRequest[T] {
-	return &apiRequest[T]{endpoint: url}
+	return &apiRequest[T]{endpoint: url, query: make(map[string]any)}
 }
 
 // TODO: this doesn't work yet.
 func (req *apiRequest[T]) SetParam(key string, value any) *apiRequest[T] {
-	req.query[key] = value
+	if value != nil {
+		req.query[key] = value
+	} else {
+		delete(req.query, key)
+	}
+
 	return req
+}
+
+func (q *query) toMap() map[string]string {
+	params := make(map[string]string)
+
+	for k, v := range *q {
+		rt := reflect.TypeOf(v)
+		switch rt.Kind() {
+		case reflect.Slice:
+			var strSlice []string
+			sliceValue := reflect.ValueOf(v)
+
+			for i := 0; i < sliceValue.Len(); i++ {
+				subVal := sliceValue.Index(i)
+				strSlice = append(strSlice, fmt.Sprint(subVal.Interface()))
+			}
+
+			params[k] = strings.Join(strSlice, ",")
+		default:
+			params[k] = fmt.Sprintf("%v", v)
+		}
+	}
+
+	return params
+}
+
+func (req *apiRequest[T]) buildURL() (url *url.URL, err error) {
+	url, err = url.Parse(req.endpoint)
+
+	if err != nil {
+		return nil, err
+	}
+
+	values := url.Query()
+
+	for k, v := range req.query.toMap() {
+		values.Set(k, v)
+	}
+
+	url.RawQuery = values.Encode()
+
+	return url, err
 }
 
 // TODO: this doesn't work yet.
@@ -33,7 +86,13 @@ func (req *apiRequest[T]) First() (value T, header http.Header, err error) {
 }
 
 func (req *apiRequest[T]) Get() (values []T, header http.Header, err error) {
-	header, err = unmarshalAPIRequest[[]T](req.endpoint, &values)
+	url, err := req.buildURL()
+
+	if err != nil {
+		return nil, header, err
+	}
+
+	header, err = unmarshalAPIRequest[[]T](url.String(), &values)
 	return values, header, err
 }
 
