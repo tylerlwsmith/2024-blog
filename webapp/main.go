@@ -59,7 +59,10 @@ func main() {
 		vars := mux.Vars(r)
 		slug := vars["slug"]
 
-		posts, _, err := api.Posts().SetParam("slug", slug).SetParam("per_page", 1).Get()
+		posts, _, err := api.Posts().
+			SetParam("slug", slug).
+			SetParam("per_page", 1).
+			Get()
 
 		if err != nil {
 			w.WriteHeader(503)
