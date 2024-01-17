@@ -16,10 +16,11 @@
         {{ if len .Tags }}
           <div>
             {{ range .Tags }}
-              {{ $tag :=  (index $tagIdMap .) }}
-              <a href="/tags/{{ $tag.Slug }}">
-                {{ $tag.Name }}
-              </a>
+              {{ with (index $tagIdMap .) }}
+                <a href="/tags/{{ .Slug }}">
+                  {{ .Name }}
+                </a>
+              {{ end }}
             {{ end }}
           </div>
         {{ end }}
