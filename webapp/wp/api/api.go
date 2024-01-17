@@ -24,7 +24,6 @@ func newRequest[T any](url string) *apiRequest[T] {
 	return &apiRequest[T]{endpoint: url, query: make(map[string]any)}
 }
 
-// TODO: this doesn't work yet.
 func (req *apiRequest[T]) SetParam(key string, value any) *apiRequest[T] {
 	if value != nil {
 		req.query[key] = value
@@ -78,21 +77,28 @@ func (req *apiRequest[T]) buildURL() (url *url.URL, err error) {
 }
 
 // TODO: this doesn't work yet.
-func (req *apiRequest[T]) First() (value T, header http.Header, err error) {
-	var values []T
-	header, err = unmarshalAPIRequest[[]T](req.endpoint, &values)
-	// todo: rip first value out, return error if no values.
-	return value, header, err
-}
-
-func (req *apiRequest[T]) Get() (values []T, header http.Header, err error) {
+func (req *apiRequest[T]) First() (value *T, header http.Header, err error) {
+	req.query["per_page"] = 1
 	url, err := req.buildURL()
 
 	if err != nil {
 		return nil, header, err
 	}
 
-	header, err = unmarshalAPIRequest[[]T](url.String(), &values)
+	header, err = unmarshalAPIRequest[*T](url.String(), &value)
+
+	// TODO: error handling for not found.
+	return value, header, err
+}
+
+func (req *apiRequest[T]) Get() (values *[]T, header http.Header, err error) {
+	url, err := req.buildURL()
+
+	if err != nil {
+		return nil, header, err
+	}
+
+	header, err = unmarshalAPIRequest[*[]T](url.String(), &values)
 	return values, header, err
 }
 

@@ -23,8 +23,8 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		var posts []wp.WPPost
-		var tags []wp.WPTag
+		var posts *[]wp.WPPost
+		var tags *[]wp.WPTag
 		var postErr, tagErr error
 
 		wg := sync.WaitGroup{}
