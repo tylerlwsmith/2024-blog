@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"sync"
 	"text/template"
@@ -61,49 +59,21 @@ func main() {
 		vars := mux.Vars(r)
 		slug := vars["slug"]
 
-		resp, err := http.Get("http://wordpress:80/wp-json/wp/v2/posts?slug=" + slug)
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "WordPress failed to return a response.\n", err.Error())
-			return
-		}
-
-		if resp.StatusCode > 299 {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "WordPress returned a non-200 status code.\n")
-		}
-
-		bodyStr, err := io.ReadAll(resp.Body)
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error in reading the body of the WordPress response.\n")
-			fmt.Fprint(w, err.Error())
-			return
-		}
-
-		err = resp.Body.Close()
-		if err != nil {
-			w.WriteHeader(503)
-			fmt.Fprint(w, "The body response could not be closed.\n", err.Error())
-			return
-		}
-
-		posts := []wp.WPPost{}
-		err = json.Unmarshal(bodyStr, &posts)
+		posts, _, err := api.Posts().SetParam("slug", slug).SetParam("per_page", 1).Get()
 
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error unmarshalling JSON.\n", err.Error())
+			fmt.Fprintf(w, "post error:\n %v", err.Error())
 			return
 		}
 
-		if len(posts) == 0 {
+		if len(*posts) == 0 {
 			w.WriteHeader(404)
 			fmt.Fprint(w, "Post not found.\n")
 			fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
 			return
 		}
-		p := posts[0]
+		p := (*posts)[0]
 
 		err = postsTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   p.Title.Rendered,
