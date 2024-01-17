@@ -28,8 +28,8 @@ func main() {
 		wg := sync.WaitGroup{}
 
 		wg.Add(2)
-		go func() { defer wg.Done(); posts, _, postErr = api.Posts().Get() }()
-		go func() { defer wg.Done(); tags, _, tagErr = api.Tags().Get() }()
+		go func() { defer wg.Done(); posts, _, postErr = api.Posts().GetAll() }()
+		go func() { defer wg.Done(); tags, _, tagErr = api.Tags().GetAll() }()
 		wg.Wait()
 
 		if postErr != nil {

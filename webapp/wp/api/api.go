@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"webapp/wp"
@@ -87,7 +88,46 @@ func (req *apiRequest[T]) Get() (values *[]T, header http.Header, err error) {
 	return values, header, err
 }
 
-// TODO: GetAll() method that loops through all pages.
+func (req *apiRequest[T]) GetAll() (values *[]T, header http.Header, err error) {
+START:
+	values = &[]T{}
+	total := 0
+	currentPage := 1
+	for allFetched := false; !allFetched; {
+		url, err := req.SetParam("page", currentPage).buildURL()
+		if err != nil {
+			return nil, header, err
+		}
+
+		requestValues := &[]T{}
+		header, err = unmarshalAPIRequest[*[]T](url.String(), &requestValues)
+		if err != nil {
+			return nil, header, err
+		}
+
+		newTotal, err := strconv.Atoi(header.Get("X-WP-Total"))
+		if err != nil {
+			return nil, header, err
+		}
+
+		if total != 0 && total != newTotal {
+			// This could be bug prone if posts were published every second,
+			// but they aren't...
+			goto START
+		} else {
+			total = newTotal
+			*values = append(*values, *requestValues...)
+		}
+
+		if len(*values) == total {
+			allFetched = true
+		} else {
+			currentPage = currentPage + 1
+		}
+	}
+
+	return values, header, err
+}
 
 func unmarshalAPIRequest[T any](url string, value *T) (header http.Header, err error) {
 	res, err := http.Get(url)
