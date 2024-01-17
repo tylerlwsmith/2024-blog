@@ -74,7 +74,6 @@ func main() {
 			fmt.Fprintf(w, "post error:\n %v", err.Error())
 			return
 		}
-
 		if len(*posts) == 0 {
 			w.WriteHeader(404)
 			fmt.Fprint(w, "Post not found.\n")
@@ -83,10 +82,21 @@ func main() {
 		}
 		p := (*posts)[0]
 
+		t, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+			return
+		}
+		tagIdMap := map[int]wp.WPTag{}
+		for _, tag := range *t {
+			tagIdMap[tag.Id] = tag
+		}
+
 		err = postsTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   p.Title.Rendered,
 			Request: *r,
-			Data:    p,
+			Data:    map[string]any{"post": p, "tagIdMap": tagIdMap},
 		})
 
 		if err != nil {
