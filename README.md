@@ -13,19 +13,23 @@ https://developer.wordpress.org/reference/classes/wp_role/remove_cap/
 All capabilities:
 https://wordpress.org/documentation/article/roles-and-capabilities/
 
-# WordPress requirements
+## WordPress requirements
 
 https://make.wordpress.org/hosting/handbook/server-environment/
 
-# Caching?
+## WP REST API Docs
+
+https://developer.wordpress.org/rest-api/
+
+## Caching?
 
 Seems to be WP recommended and web host agnostic:
 https://wordpress.org/plugins/w3-total-cache/
 
-# Rewrite URLs to remove /wp/ from /wp/wp-admin/
+## Rewrite URLs to remove /wp/ from /wp/wp-admin/
 
 https://discourse.roots.io/t/recommended-subdomain-multisite-nginx-vhost-configuration-with-new-web-layout/1429/12?u=etc
 
-# Automated testing in WordPress:
+## Automated testing in WordPress:
 
 https://www.smashingmagazine.com/2017/12/automated-testing-wordpress-plugins-phpunit/
