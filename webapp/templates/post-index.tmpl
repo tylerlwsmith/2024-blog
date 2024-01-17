@@ -1,5 +1,6 @@
 {{ define "main" }}
   {{ template "_header.tmpl" . }}
+  {{ $tagIdMap := index .Data "tagIdMap" }}
 
 
   <h1>Posts</h1>
@@ -12,6 +13,16 @@
         <time datetime="{{ .Date.Format "2006-01-02" }}">
           {{ .Date.Format "January 2, 2006" }}
         </time>
+        {{ if len .Tags }}
+          <div>
+            {{ range .Tags }}
+              {{ $tag :=  (index $tagIdMap .) }}
+              <a href="/tags/{{ $tag.Slug }}">
+                {{ $tag.Name }}
+              </a>
+            {{ end }}
+          </div>
+        {{ end }}
       </li>
     {{ end }}
   </ul>

@@ -43,10 +43,15 @@ func main() {
 			return
 		}
 
+		tagIdMap := map[int]wp.WPTag{}
+		for _, tag := range *tags {
+			tagIdMap[tag.Id] = tag
+		}
+
 		err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   "Posts",
 			Request: *r,
-			Data:    map[string]any{"posts": posts, "tags": tags},
+			Data:    map[string]any{"posts": posts, "tags": tags, "tagIdMap": tagIdMap},
 		})
 
 		if err != nil {
