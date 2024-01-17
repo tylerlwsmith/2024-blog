@@ -31,8 +31,8 @@ func main() {
 		wg := sync.WaitGroup{}
 
 		wg.Add(2)
-		go func() { defer wg.Done(); posts, postErr = api.GetPosts() }()
-		go func() { defer wg.Done(); tags, tagErr = api.GetTags() }()
+		go func() { defer wg.Done(); posts, _, postErr = api.Posts().Get() }()
+		go func() { defer wg.Done(); tags, _, tagErr = api.Tags().Get() }()
 		wg.Wait()
 
 		// Order is important: all error checking below follows this order.
@@ -111,7 +111,6 @@ func main() {
 			fmt.Fprint(w, "Post not found.\n")
 			fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
 			return
-
 		}
 		p := posts[0]
 

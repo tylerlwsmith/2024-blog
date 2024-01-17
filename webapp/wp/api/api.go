@@ -5,35 +5,62 @@ import (
 	"errors"
 	"io"
 	"net/http"
+
 	"webapp/wp"
 )
 
-func unmarshalAPIRequest[T any](url string, value *T) (err error) {
+type apiRequest[T any] struct {
+	endpoint string
+	query    map[string]any
+}
+
+func newRequest[T any](url string) *apiRequest[T] {
+	return &apiRequest[T]{endpoint: url}
+}
+
+// TODO: this doesn't work yet.
+func (req *apiRequest[T]) SetParam(key string, value any) *apiRequest[T] {
+	req.query[key] = value
+	return req
+}
+
+// TODO: this doesn't work yet.
+func (req *apiRequest[T]) First() (value T, header http.Header, err error) {
+	var values []T
+	header, err = unmarshalAPIRequest[[]T](req.endpoint, &values)
+	// todo: rip first value out, return error if no values.
+	return value, header, err
+}
+
+func (req *apiRequest[T]) Get() (values []T, header http.Header, err error) {
+	header, err = unmarshalAPIRequest[[]T](req.endpoint, &values)
+	return values, header, err
+}
+
+// TODO: GetAll() method that loops through all pages.
+
+func unmarshalAPIRequest[T any](url string, value *T) (header http.Header, err error) {
 	res, err := http.Get(url)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode > 299 {
-		return errors.New("API returned non-200 status code")
+		return res.Header, errors.New("API returned non-200 status code")
 	}
 
 	bytes, err := io.ReadAll(res.Body)
 
 	err = json.Unmarshal(bytes, &value)
 
-	return err
+	return res.Header, err
 }
 
-func GetPosts() (posts []wp.WPPost, err error) {
-	posts = []wp.WPPost{}
-	err = unmarshalAPIRequest[[]wp.WPPost]("http://wordpress:80/wp-json/wp/v2/posts", &posts)
-	return posts, err
+func Posts() (request *apiRequest[wp.WPPost]) {
+	return newRequest[wp.WPPost]("http://wordpress:80/wp-json/wp/v2/posts")
 }
 
-func GetTags() (tags []wp.WPTag, err error) {
-	tags = []wp.WPTag{}
-	err = unmarshalAPIRequest[[]wp.WPTag]("http://wordpress:80/wp-json/wp/v2/tags", &tags)
-	return tags, err
+func Tags() (request *apiRequest[wp.WPTag]) {
+	return newRequest[wp.WPTag]("http://wordpress:80/wp-json/wp/v2/tags")
 }
