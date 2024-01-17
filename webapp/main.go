@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"sync"
 	"text/template"
 
@@ -35,29 +34,21 @@ func main() {
 		go func() { defer wg.Done(); tags, _, tagErr = api.Tags().Get() }()
 		wg.Wait()
 
-		// Order is important: all error checking below follows this order.
-		resTypes := [2]string{"post", "tag"}
-		errMsgs := []string{}
-
-		for i, err := range []error{postErr, tagErr} {
-			if err != nil {
-				errMsgs = append(errMsgs, fmt.Sprintf("%v error:\n %v", resTypes[i], err.Error()))
-			}
+		if postErr != nil {
+			fmt.Fprintf(w, "post error:\n %v", postErr.Error())
 		}
-
-		if len(errMsgs) > 0 {
+		if tagErr != nil {
+			fmt.Fprintf(w, "tag error:\n %v", tagErr.Error())
+		}
+		if postErr != nil || tagErr != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, strings.Join(errMsgs[:], "\n"))
 			return
 		}
 
 		err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   "Posts",
 			Request: *r,
-			Data: map[string]any{
-				"posts": posts,
-				"tags":  tags,
-			},
+			Data:    map[string]any{"posts": posts, "tags": tags},
 		})
 
 		if err != nil {
