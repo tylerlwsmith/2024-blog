@@ -82,15 +82,15 @@ func main() {
 		}
 		p := (*posts)[0]
 
-		t, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
+		tags, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
 		if err != nil {
 			w.WriteHeader(503)
 			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 			return
 		}
 		tagIdMap := map[int]wp.WPTag{}
-		for _, tag := range *t {
-			tagIdMap[tag.Id] = tag
+		for _, t := range *tags {
+			tagIdMap[t.Id] = t
 		}
 
 		err = postsTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
