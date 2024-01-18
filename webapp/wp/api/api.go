@@ -89,12 +89,16 @@ func (req *apiRequest[T]) Get() (values *[]T, header http.Header, err error) {
 }
 
 func (req *apiRequest[T]) GetAll() (values *[]T, header http.Header, err error) {
+	const maxAttempts = 4
+	attempts := 0
+
 START:
 	values = &[]T{}
 	total := 0
 	currentPage := 1
 	for allFetched := false; !allFetched; {
-		url, err := req.SetParam("page", currentPage).buildURL()
+		var url *url.URL
+		url, err = req.SetParam("page", currentPage).buildURL()
 		if err != nil {
 			return nil, header, err
 		}
@@ -112,8 +116,14 @@ START:
 
 		if total != 0 && total != newTotal {
 			// This could be bug prone if posts were published every second,
-			// but they aren't...
-			goto START
+			// but they aren't.
+			if attempts < maxAttempts {
+				attempts += 1
+				goto START
+			} else {
+				err = errors.New("too many unsuccessful GetAll() attempts")
+				return nil, header, err
+			}
 		} else {
 			total = newTotal
 			*values = append(*values, *requestValues...)
@@ -122,7 +132,7 @@ START:
 		if len(*values) == total {
 			allFetched = true
 		} else {
-			currentPage = currentPage + 1
+			currentPage += 1
 		}
 	}
 
