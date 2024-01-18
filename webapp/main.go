@@ -44,6 +44,8 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var posts *[]wp.WPPost
 		var tags *[]wp.WPTag
