@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
+	"slices"
 	"sync"
-	"text/template"
 
 	"github.com/gorilla/mux"
 
@@ -16,6 +17,7 @@ import (
 var tmplCommon = []string{"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl"}
 var homepageTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-index.tmpl")...))
 var postsTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-show.tmpl")...))
+var tagTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/tag-show.tmpl")...))
 
 func main() {
 	r := mux.NewRouter()
@@ -85,7 +87,7 @@ func main() {
 		tags, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
 		if err != nil {
 			w.WriteHeader(503)
-			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+			fmt.Fprint(w, "There was an error.\n", err.Error())
 			return
 		}
 		tagIdMap := map[int]wp.WPTag{}
@@ -97,6 +99,67 @@ func main() {
 			Title:   p.Title.Rendered,
 			Request: *r,
 			Data:    map[string]any{"post": p, "tagIdMap": tagIdMap},
+		})
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+			return
+		}
+	})
+
+	r.HandleFunc("/tags/{slug}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		slug := vars["slug"]
+
+		tags, _, err := api.Tags().
+			SetParam("slug", slug).
+			SetParam("per_page", 1).
+			Get()
+
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprintf(w, "tag error:\n %v", err.Error())
+			return
+		}
+		if len(*tags) == 0 {
+			w.WriteHeader(404)
+			fmt.Fprint(w, "Post not found.\n")
+			fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
+			return
+		}
+		t := (*tags)[0]
+
+		posts, _, err := api.Posts().SetParam("tags", t.Id).GetAll()
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "there was an error.\n", err.Error())
+			return
+		}
+
+		postTagIds := []int{}
+		for _, p := range *posts {
+			postTagIds = append(postTagIds, p.Tags...)
+		}
+		// Dedupe IDs. https://stackoverflow.com/a/76471309/7759523
+		slices.Sort(postTagIds) // mutates original slice.
+		uniqTagIds := slices.Compact(postTagIds)
+
+		postTags, _, err := api.Tags().SetParam("include", uniqTagIds).GetAll()
+		if err != nil {
+			w.WriteHeader(503)
+			fmt.Fprint(w, "there was an error.\n", err.Error())
+			return
+		}
+		tagIdMap := map[int]wp.WPTag{}
+		for _, t := range *postTags {
+			tagIdMap[t.Id] = t
+		}
+
+		err = tagTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+			Title:   template.HTML(t.Name),
+			Request: *r,
+			Data:    map[string]any{"tag": t, "posts": posts, "tagIdMap": tagIdMap},
 		})
 
 		if err != nil {
