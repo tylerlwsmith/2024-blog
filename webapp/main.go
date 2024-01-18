@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -14,10 +15,31 @@ import (
 	"webapp/wp/api"
 )
 
-var tmplCommon = []string{"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl"}
-var homepageTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-index.tmpl")...))
-var postsTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/post-show.tmpl")...))
-var tagTmpl = template.Must(template.ParseFiles(append(tmplCommon, "templates/tag-show.tmpl")...))
+var homepageTmpl *template.Template
+var postsTmpl *template.Template
+var tagTmpl *template.Template
+
+func init() {
+	var tmplCommon = template.Must(
+		template.
+			New("Undefined").
+			Funcs(template.FuncMap{
+				"CurrentYear": func() string {
+					return time.Now().Format("2006")
+				},
+			}).ParseFiles(
+			"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl",
+		))
+
+	makeTmpl := func(file string) *template.Template {
+		c := template.Must(tmplCommon.Clone())
+		return template.Must(c.ParseFiles(file))
+	}
+
+	homepageTmpl = makeTmpl("templates/post-index.tmpl")
+	postsTmpl = makeTmpl("templates/post-show.tmpl")
+	tagTmpl = makeTmpl("templates/tag-show.tmpl")
+}
 
 func main() {
 	r := mux.NewRouter()
