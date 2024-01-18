@@ -1,28 +1,28 @@
-{{ define "main" }}
-  {{ template "_header.tmpl" . }}
-  {{ $tagIdMap := index .Data "tagIdMap" }}
+{{- define "main" }}
+  {{- template "_header.tmpl" . }}
+  {{- $tagIdMap := index .Data "tagIdMap" }}
 
-  {{ with index .Data "post" }}
+  {{- with index .Data "post" }}
     <h1>{{ .Title.Rendered }}</h1>
 
     <time datetime="{{ .Date.Format "2006-01-02" }}">
       {{ .Date.Format "January 2, 2006" }}
     </time>
 
-    {{ if len .Tags }}
+    {{- if len .Tags }}
       <div>
-        {{ range .Tags }}
-          {{ with (index $tagIdMap .) }}
+        {{- range .Tags }}
+          {{- with (index $tagIdMap .) }}
             <a href="/tags/{{ .Slug }}">
               {{ .Name }}
             </a>
-          {{ end }}
-        {{ end }}
+          {{- end }}
+        {{- end }}
       </div>
-    {{ end }}
+    {{- end }}
 
     {{ .Content.Rendered }}
-  {{ end }}
+  {{- end }}
 
-  {{ template "_footer.tmpl" . }}
-{{ end }}
+  {{- template "_footer.tmpl" . }}
+{{- end }}
