@@ -1,13 +1,16 @@
 {{ $wikiLink := "https://en.wikipedia.org/wiki/Scrum_(software_development)#History" }}
 
 
-<footer>
-  <p>
-    <a href="{{ $wikiLink }}">Ken Schwaber</a> and
-    <a href="{{ $wikiLink }}">Jeff Sutherland</a> are my enemies
-  </p>
-  <p>
-    &copy; Tyler Smith
-    {{ CurrentYear }}
-  </p>
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <a href="{{ $wikiLink }}">Ken Schwaber</a> and
+      <a href="{{ $wikiLink }}">Jeff Sutherland</a> are my enemies.
+    </div>
+
+    <div>
+      &copy; Tyler Smith
+      {{ CurrentYear }}
+    </div>
+  </div>
 </footer>

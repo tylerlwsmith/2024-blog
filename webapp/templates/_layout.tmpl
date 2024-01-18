@@ -7,7 +7,19 @@
     <link rel="stylesheet" href="/static/app.css" />
   </head>
   <body>
-    {{ block "main" . }}
-    {{ end }}
+    <div class="site-layout">
+      <div class="site-header-area">
+        {{- template "_header.tmpl" . }}
+      </div>
+
+      <div class="site-content-area">
+        {{ block "main" . }}
+        {{ end }}
+      </div>
+
+      <div class="site-footer-area">
+        {{- template "_footer.tmpl" . }}
+      </div>
+    </div>
   </body>
 </html>

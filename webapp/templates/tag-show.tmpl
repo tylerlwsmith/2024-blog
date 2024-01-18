@@ -1,37 +1,37 @@
 {{- define "main" }}
-  {{- template "_header.tmpl" . }}
   {{- $tagIdMap := index .Data "tagIdMap" }}
   {{- $posts := index .Data "posts" }}
 
-  {{- with index .Data "tag" }}
-    <h1>{{ .Name }}</h1>
 
-    {{- if (gt (len $posts) 0) }}
-      <ul>
-        {{- range $posts }}
-          <li>
-            <a href="/posts/{{ .Slug }}">
-              {{ .Title.Rendered }}
-            </a>
-            <time datetime="{{ .Date.Format "2006-01-02" }}">
-              {{ .Date.Format "January 2, 2006" }}
-            </time>
-            {{- if len .Tags }}
-              <div>
-                {{- range .Tags }}
-                  {{- with (index $tagIdMap .) }}
-                    <a href="/tags/{{ .Slug }}">
-                      {{ .Name }}
-                    </a>
+  <div class="container">
+    {{- with index .Data "tag" }}
+      <h1>{{ .Name }}</h1>
+
+      {{- if (gt (len $posts) 0) }}
+        <ul>
+          {{- range $posts }}
+            <li>
+              <a href="/posts/{{ .Slug }}">
+                {{ .Title.Rendered }}
+              </a>
+              <time datetime="{{ .Date.Format "2006-01-02" }}">
+                {{ .Date.Format "January 2, 2006" }}
+              </time>
+              {{- if len .Tags }}
+                <div>
+                  {{- range .Tags }}
+                    {{- with (index $tagIdMap .) }}
+                      <a href="/tags/{{ .Slug }}">
+                        {{ .Name }}
+                      </a>
+                    {{- end }}
                   {{- end }}
-                {{- end }}
-              </div>
-            {{- end }}
-          </li>
-        {{- end }}
-      </ul>
+                </div>
+              {{- end }}
+            </li>
+          {{- end }}
+        </ul>
+      {{- end }}
     {{- end }}
-  {{- end }}
-
-  {{- template "_footer.tmpl" . }}
+  </div>
 {{- end }}
