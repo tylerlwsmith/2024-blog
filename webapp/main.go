@@ -27,9 +27,11 @@ func init() {
 				"CurrentYear": func() string {
 					return time.Now().Format("2006")
 				},
-			}).ParseFiles(
-			"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl",
-		))
+			}).
+			ParseFiles(
+				"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl",
+			),
+	)
 
 	makeTmpl := func(file string) *template.Template {
 		c := template.Must(tmplCommon.Clone())
