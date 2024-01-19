@@ -9,6 +9,19 @@ body {
   margin: 0;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+}
+
 .site-layout {
   display: grid;
   grid-template-areas:
@@ -35,6 +48,8 @@ body {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .site-header {
@@ -46,4 +61,56 @@ body {
   background-color: #ddd;
   padding-top: 20px;
   padding-bottom: 20px;
+}
+
+.page-title {
+  /* todo */
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-list-item {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+}
+
+.post-list-item__link-wrapper {
+  flex-basis: 100%;
+  padding-bottom: 4px;
+}
+
+.post-list-item__link {
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-list-item__date {
+  order: -1;
+  font-size: 0.875rem;
+  color: #444;
+  padding-bottom: 4px;
+}
+
+.post-list-item__tag-dl {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.post-list-item__tag-dd {
+  margin: 0;
+}
+
+.post-list-item__tag-link {
+  order: -1;
+  font-size: 0.875rem;
+  color: #444;
+  text-decoration: none;
 }

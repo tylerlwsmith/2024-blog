@@ -4,25 +4,36 @@
 
   <div class="container">
     <h1>Posts</h1>
-    <ul>
+    <ul class="post-list">
       {{- range (index .Data "posts") }}
-        <li>
-          <a href="/posts/{{ .Slug }}">
-            {{ .Title.Rendered }}
-          </a>
-          <time datetime="{{ .Date.Format "2006-01-02" }}">
+        <li class="post-list-item">
+          <div class="post-list-item__link-wrapper">
+            <a href="/posts/{{ .Slug }}" class="post-list-item__link">
+              {{ .Title.Rendered }}
+            </a>
+          </div>
+          <time
+            class="post-list-item__date"
+            datetime="{{ .Date.Format "2006-01-02" }}"
+          >
             {{ .Date.Format "January 2, 2006" }}
           </time>
           {{- if len .Tags }}
-            <div>
+            <dl class="post-list-item__tag-dl">
+              <dt class="sr-only">Tags</dt>
               {{- range .Tags }}
                 {{ with (index $tagIdMap .) }}
-                  <a href="/tags/{{ .Slug }}">
-                    {{ .Name }}
-                  </a>
+                  <dd class="post-list-item__tag-dd">
+                    <a
+                      href="/tags/{{ .Slug }}"
+                      class="post-list-item__tag-link"
+                    >
+                      {{ .Name }}
+                    </a>
+                  </dd>
                 {{- end }}
               {{- end }}
-            </div>
+            </dl>
           {{- end }}
         </li>
       {{- end }}
