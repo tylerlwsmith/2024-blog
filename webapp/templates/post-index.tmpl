@@ -38,17 +38,20 @@
         </li>
       {{- end }}
     </ul>
-
-    <h2>Tags</h2>
-    <ul>
-      {{- range (index .Data "tags") }}
-        <li>
-          <a href="/tags/{{ .Slug }}">
-            {{ .Name }}
-            ({{ .Count }})
-          </a>
-        </li>
-      {{- end }}
-    </ul>
+    <aside class="tag-sidebar">
+      <h2>Tags</h2>
+      <nav>
+        <ul>
+          {{- range (index .Data "tags") }}
+            <li>
+              <a href="/tags/{{ .Slug }}">
+                {{ .Name }}
+                ({{ .Count }})
+              </a>
+            </li>
+          {{- end }}
+        </ul>
+      </nav>
+    </aside>
   </div>
 {{- end }}
