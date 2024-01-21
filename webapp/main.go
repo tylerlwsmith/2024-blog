@@ -49,10 +49,33 @@ func init() {
 	tagTmpl = makeTmpl("templates/tag-show.tmpl")
 }
 
+func stripTrailingSlashes(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+
+		if path != "/" && path[len(path)-1:] == "/" {
+			for path[len(path)-1:] == "/" {
+				path = path[:len(path)-1]
+			}
+
+			// Clone URL. I'm ~20% sure this is doing what I think it's doing.
+			// I'm also not absolutely sure that this needs to be cloned.
+			// https://github.com/golang/go/issues/41733#issuecomment-708556495
+			c := *r.URL
+			c.Path = path
+
+			http.Redirect(w, r, path, http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	r.Use(stripTrailingSlashes)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var posts *[]wp.WPPost
@@ -201,5 +224,10 @@ func main() {
 		}
 	})
 
+	// Middleware is typically skipped when there is no matching route. Our app
+	// will strip trailing slashes so we need a custom NotFoundHandler.
+	// https://github.com/gorilla/mux/issues/636
+	// https://stackoverflow.com/a/56937571/7759523
+	r.NotFoundHandler = r.NewRoute().HandlerFunc(http.NotFound).GetHandler()
 	http.ListenAndServe(":3000", r)
 }
