@@ -32,7 +32,6 @@ services:
       args:
         USER_UID: ${USER_UID:-1234}
         USER_GID: ${USER_GID:-1234}
-    # restart: unless-stopped
     restart: no
     depends_on:
       - database
