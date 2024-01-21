@@ -22,9 +22,11 @@
           {{- range .Tags }}
             {{ with (index $tagIdMap .) }}
               <dd class="post-list-item__tag-dd">
-                <a href="/tags/{{ .Slug }}" class="post-list-item__tag-link">
-                  {{ .Name }}
-                </a>
+                <span class="post-list-item__tag-wrapper">
+                  <a href="/tags/{{ .Slug }}" class="tag">
+                    {{ .Name }}
+                  </a>
+                </span>
               </dd>
             {{- end }}
           {{- end }}

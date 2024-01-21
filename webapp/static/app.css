@@ -16,6 +16,14 @@ body {
   color: #404040;
 }
 
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -81,8 +89,14 @@ body {
 
 .homepage-wrapper {
   display: grid;
-  grid-template-areas: "left middle right";
+  grid-template-areas: "left center right";
   grid-template-columns: 1fr minmax(0, 800px) 1fr;
+}
+
+@media (max-width: 799px) {
+  .homepage-wrapper {
+    display: block;
+  }
 }
 
 .post-list {
@@ -94,7 +108,7 @@ body {
 .post-list-item {
   display: flex;
   flex-wrap: wrap;
-  padding-bottom: 20px;
+  padding-bottom: 24px;
 }
 
 .post-list-item__link-wrapper {
@@ -104,8 +118,10 @@ body {
 
 .post-list-item__link {
   font-size: 1.25rem;
+  display: inline-block;
   text-decoration: none;
   color: inherit;
+  margin-bottom: 8px;
 }
 
 .post-list-item__date {
@@ -126,15 +142,21 @@ body {
   margin: 0;
 }
 
-.post-list-item__tag-link {
+.post-list-item__tag-wrapper {
   order: -1;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid;
   font-size: 0.875rem;
   color: #444;
   text-decoration: none;
 }
 
 .tag-sidebar {
-  order: -1;
+  grid-area: left;
   padding-left: 20px;
   padding-right: 20px;
   justify-self: end;

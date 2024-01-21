@@ -189,7 +189,7 @@ func main() {
 		}
 
 		err = tagTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
-			Title:   template.HTML(t.Name),
+			Title:   template.HTML(fmt.Sprintf("Tag: %v", t.Name)),
 			Request: *r,
 			Data:    map[string]any{"tag": t, "posts": posts, "tagIdMap": tagIdMap},
 		})

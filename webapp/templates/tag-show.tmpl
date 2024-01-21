@@ -5,7 +5,7 @@
 
   <div class="container">
     {{- with index .Data "tag" }}
-      <h1>{{ .Name }}</h1>
+      <h1>Tag: {{ .Name }}</h1>
 
       {{- if (gt (len $posts) 0) }}
         {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
