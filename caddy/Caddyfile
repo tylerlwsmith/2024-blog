@@ -8,10 +8,6 @@
 		path /static /static/*
 	}
 
-	handle @webapp {
-		reverse_proxy webapp:3000
-	}
-	handle {
-		reverse_proxy wordpress:80
-	}
+	reverse_proxy @webapp webapp:3000
+	reverse_proxy wordpress:80
 }
