@@ -117,6 +117,10 @@ func main() {
 		}
 	})
 
+	r.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
 	r.HandleFunc("/posts/{slug}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		slug := vars["slug"]
