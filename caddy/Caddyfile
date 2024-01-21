@@ -4,6 +4,7 @@
 	@wordpress {
 		path /app/*
 		path /wp/*
+		not path /wp/
 		path /wp-json/*
 	}
 
