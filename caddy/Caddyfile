@@ -1,0 +1,17 @@
+:80 {
+	bind 0.0.0.0
+	encode zstd gzip
+	@webapp {
+		path /
+		path /posts /posts/*
+		path /tags /tags/*
+		path /static /static/*
+	}
+
+	handle @webapp {
+		reverse_proxy webapp:3000
+	}
+	handle {
+		reverse_proxy wordpress:80
+	}
+}

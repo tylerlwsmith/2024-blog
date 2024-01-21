@@ -1,6 +1,18 @@
 version: '3.1'
 
 services:
+  caddy:
+    build:
+      dockerfile: dockerfiles/caddy.Dockerfile
+      context: .
+    restart: no
+    ports:
+      - 8080:80
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
   webapp:
     build:
       dockerfile: ./dockerfiles/webapp.Dockerfile
@@ -22,8 +34,6 @@ services:
         USER_GID: ${USER_GID:-1234}
     # restart: unless-stopped
     restart: no
-    ports:
-      - 8080:80
     depends_on:
       - database
     environment:
@@ -71,3 +81,5 @@ services:
 volumes:
   wp-content:
   database:
+  caddy_data:
+  caddy_config:
