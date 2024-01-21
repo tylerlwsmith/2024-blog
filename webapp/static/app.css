@@ -66,6 +66,10 @@ img {
   padding: 0 var(--desktop-padding-x);
 }
 
+.spacer {
+  padding-bottom: 40px;
+}
+
 .site-header {
   padding-top: 20px;
   padding-bottom: 20px;

@@ -2,6 +2,8 @@
   {{- $tagIdMap := index .Data "tagIdMap" }}
 
 
+  <div class="spacer"></div>
+
   <div class="container">
     {{- with index .Data "post" }}
       <h1>{{ .Title.Rendered }}</h1>
@@ -25,4 +27,6 @@
       {{ .Content.Rendered }}
     {{- end }}
   </div>
+
+  <div class="spacer"></div>
 {{- end }}

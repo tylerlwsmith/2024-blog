@@ -3,6 +3,8 @@
   {{- $posts := index .Data "posts" }}
 
 
+  <div class="spacer"></div>
+
   <div class="container">
     {{- with index .Data "tag" }}
       <h1>Tag: {{ .Name }}</h1>
@@ -12,4 +14,6 @@
       {{- end }}
     {{- end }}
   </div>
+
+  <div class="spacer"></div>
 {{- end }}
