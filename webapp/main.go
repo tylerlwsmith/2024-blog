@@ -59,7 +59,7 @@ func stripTrailingSlashes(next http.Handler) http.Handler {
 			}
 
 			// Clone URL. I'm ~20% sure this is doing what I think it's doing.
-			// I'm also not absolutely sure that this needs to be cloned.
+			// I'm also not absolutely certain that this needs to be cloned.
 			// https://github.com/golang/go/issues/41733#issuecomment-708556495
 			c := *r.URL
 			c.Path = path
