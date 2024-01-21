@@ -1,48 +1,17 @@
 {{- define "main" }}
   {{- $tagIdMap := index .Data "tagIdMap" }}
+  {{- $posts := index .Data "posts" }}
 
 
   <div class="homepage-wrapper">
     <div style="padding: 0 20px; flex-grow: 1; flex-shrink: 1">
       <h1>Posts</h1>
-      <ul class="post-list">
-        {{- range (index .Data "posts") }}
-          <li class="post-list-item">
-            <div class="post-list-item__link-wrapper">
-              <a href="/posts/{{ .Slug }}" class="post-list-item__link">
-                {{ .Title.Rendered }}
-              </a>
-            </div>
-            <time
-              class="post-list-item__date"
-              datetime="{{ .Date.Format "2006-01-02" }}"
-            >
-              {{ .Date.Format "January 2, 2006" }}
-            </time>
-            {{- if len .Tags }}
-              <dl class="post-list-item__tag-dl">
-                <dt class="sr-only">Tags</dt>
-                {{- range .Tags }}
-                  {{ with (index $tagIdMap .) }}
-                    <dd class="post-list-item__tag-dd">
-                      <a
-                        href="/tags/{{ .Slug }}"
-                        class="post-list-item__tag-link"
-                      >
-                        {{ .Name }}
-                      </a>
-                    </dd>
-                  {{- end }}
-                {{- end }}
-              </dl>
-            {{- end }}
-          </li>
-        {{- end }}
-      </ul>
+
+      {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
     </div>
 
     <aside class="tag-sidebar">
-      <h2 class="sr-only">Tags</h2>
+      <h2>Tags</h2>
       <nav>
         <ul class="tag-sidebar-list">
           {{- range (index .Data "tags") }}

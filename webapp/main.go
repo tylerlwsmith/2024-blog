@@ -22,14 +22,20 @@ var tagTmpl *template.Template
 func init() {
 	var tmplCommon = template.Must(
 		template.
-			New("Undefined").
+			New("common").
 			Funcs(template.FuncMap{
-				"CurrentYear": func() string {
+				"currentYear": func() string {
 					return time.Now().Format("2006")
+				},
+				"args": func(args ...any) []any {
+					return args
 				},
 			}).
 			ParseFiles(
-				"templates/_layout.tmpl", "templates/_header.tmpl", "templates/_footer.tmpl",
+				"templates/_layout.tmpl",
+				"templates/_header.tmpl",
+				"templates/_footer.tmpl",
+				"templates/_post-list.tmpl",
 			),
 	)
 

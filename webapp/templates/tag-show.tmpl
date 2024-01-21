@@ -8,29 +8,7 @@
       <h1>{{ .Name }}</h1>
 
       {{- if (gt (len $posts) 0) }}
-        <ul>
-          {{- range $posts }}
-            <li>
-              <a href="/posts/{{ .Slug }}">
-                {{ .Title.Rendered }}
-              </a>
-              <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format "January 2, 2006" }}
-              </time>
-              {{- if len .Tags }}
-                <div>
-                  {{- range .Tags }}
-                    {{- with (index $tagIdMap .) }}
-                      <a href="/tags/{{ .Slug }}">
-                        {{ .Name }}
-                      </a>
-                    {{- end }}
-                  {{- end }}
-                </div>
-              {{- end }}
-            </li>
-          {{- end }}
-        </ul>
+        {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
       {{- end }}
     {{- end }}
   </div>
