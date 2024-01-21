@@ -73,7 +73,7 @@ func main() {
 			fmt.Fprintf(w, "tag error:\n %v", tagErr.Error())
 		}
 		if postErr != nil || tagErr != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			return
 		}
 
@@ -89,7 +89,7 @@ func main() {
 		})
 
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 		}
 	})
@@ -104,7 +104,7 @@ func main() {
 			Get()
 
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprintf(w, "post error:\n %v", err.Error())
 			return
 		}
@@ -118,7 +118,7 @@ func main() {
 
 		tags, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "There was an error.\n", err.Error())
 			return
 		}
@@ -134,7 +134,7 @@ func main() {
 		})
 
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 			return
 		}
@@ -150,7 +150,7 @@ func main() {
 			Get()
 
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprintf(w, "tag error:\n %v", err.Error())
 			return
 		}
@@ -164,7 +164,7 @@ func main() {
 
 		posts, _, err := api.Posts().SetParam("tags", t.Id).GetAll()
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "there was an error.\n", err.Error())
 			return
 		}
@@ -179,7 +179,7 @@ func main() {
 
 		postTags, _, err := api.Tags().SetParam("include", uniqTagIds).GetAll()
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "there was an error.\n", err.Error())
 			return
 		}
@@ -195,7 +195,7 @@ func main() {
 		})
 
 		if err != nil {
-			w.WriteHeader(503)
+			w.WriteHeader(500)
 			fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 			return
 		}
