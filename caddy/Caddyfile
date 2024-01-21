@@ -3,9 +3,13 @@
 	encode zstd gzip
 	@wordpress {
 		path /app/*
+		not path /app/
+
 		path /wp/*
 		not path /wp/
-		path /wp-json/*
+
+		path /wp-json /wp-json/*
+		path /wp-admin /wp-admin/*
 	}
 
 	reverse_proxy @wordpress wordpress:80
