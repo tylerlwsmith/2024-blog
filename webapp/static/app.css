@@ -71,6 +71,13 @@ img {
   padding-bottom: 20px;
 }
 
+.site-logo {
+  color: inherit;
+  font-size: 20px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .site-header__container {
   margin: 0 auto;
   max-width: calc(var(--container-width) + calc(var(--sidebar-width) * 2));
