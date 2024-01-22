@@ -76,7 +76,6 @@ add_action( 'rest_api_init', function () {
 		'methods' => 'GET',
 		'callback' => function () use ( $nonce ) {
 			return [
-				'root' => esc_url_raw( rest_url() ),
 				'nonce' => $nonce,
 			];
 		},
