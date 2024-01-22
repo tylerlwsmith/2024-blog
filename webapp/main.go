@@ -71,6 +71,10 @@ func stripTrailingSlashes(next http.Handler) http.Handler {
 	})
 }
 
+func UserMiddleware() {
+	// http://localhost:8080/wp-json/wp/v2/users/me?_wpnonce=somevalue
+}
+
 func main() {
 	r := mux.NewRouter()
 
