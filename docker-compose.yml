@@ -42,6 +42,7 @@ services:
       WP_ENV: ${WP_ENV:-development}
       WP_HOME: ${WP_HOME:-http://localhost:8080}
       WP_SITEURL: ${WP_SITEURL:-http://localhost:8080/wp}
+      WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
 
       AUTH_KEY: '<pHod%g37<t7<G^MC3XO().=.oH-ICqZ6NM.b;qGf9IV#emF-hF)*r!ggea!Zm8P'
       SECURE_AUTH_KEY: '1n3>|iUo7.S{(gH6Y:`P!)8ZbU?DPt=/=F/DF{p3VQ#$hg3.D>bl0M5mwN)$yHm9'
