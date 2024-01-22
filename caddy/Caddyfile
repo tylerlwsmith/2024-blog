@@ -9,6 +9,8 @@
 		not path /wp/
 
 		path /wp-json /wp-json/*
+		not path /wp-json/nonce /wp-json/nonce/*
+
 		path /wp-admin /wp-admin/*
 	}
 

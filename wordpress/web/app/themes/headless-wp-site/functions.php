@@ -63,3 +63,20 @@ add_action( 'after_setup_theme', 'headless_wp_site_setup' );
  */
 require get_template_directory() . '/inc/template-tags.php';
 
+add_action( 'rest_api_init', function () {
+	// For reasons I don't understand, this function cannot be inlined below
+	// and still work. It must be called in this scope, and then passed into
+	// the callback below. My guess is that the wp_create_nonce() function
+	// was not designed to be nested and the callback expects a named function.
+	$nonce = wp_create_nonce( 'wp_rest' );
+
+	register_rest_route( 'nonce/v1', 'nonce', [
+		'methods' => 'GET',
+		'callback' => function () use ( $nonce ) {
+			return [
+				'root' => esc_url_raw( rest_url() ),
+				'nonce' => $nonce,
+			];
+		},
+	] );
+} );
