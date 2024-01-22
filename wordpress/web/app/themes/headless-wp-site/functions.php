@@ -63,6 +63,8 @@ add_action( 'after_setup_theme', 'headless_wp_site_setup' );
  */
 require get_template_directory() . '/inc/template-tags.php';
 
+// This endpoint is a potential security vulnerability so it should be
+// disabled by our webserver to outside traffic.
 add_action( 'rest_api_init', function () {
 	// For reasons I don't understand, this function cannot be inlined below
 	// and still work. It must be called in this scope, and then passed into
