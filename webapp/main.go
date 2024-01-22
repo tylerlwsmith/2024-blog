@@ -72,7 +72,7 @@ func stripTrailingSlashes(next http.Handler) http.Handler {
 }
 
 func UserMiddleware() {
-	// http://localhost:8080/wp-json/wp/v2/users/me?_wpnonce=somevalue
+	// http://localhost:8080/wp-json/wp/v2/users/me?context=edit&_wpnonce=somevalue
 }
 
 func main() {
