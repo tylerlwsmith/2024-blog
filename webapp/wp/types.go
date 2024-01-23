@@ -90,3 +90,27 @@ type WPRenderable struct {
 type WPMeta struct {
 	Footnotes string `json:"footnotes"`
 }
+
+type WPUser struct {
+	Id                int               `json:"id"`
+	Username          string            `json:"username"`
+	Name              string            `json:"name"`
+	FirstName         string            `json:"first_name"`
+	LastName          string            `json:"last_name"`
+	Email             string            `json:"email"`
+	URL               WPURL             `json:"url"`
+	Description       string            `json:"description"`
+	Link              WPURL             `json:"link"`
+	Locale            string            `json:"locale"`
+	Nickname          string            `json:"nickname"`
+	Slug              string            `json:"slug"`
+	Roles             []string          `json:"roles"`
+	RegisteredDate    WPTime            `json:"registered_date"`
+	Capabilities      map[string]bool   `json:"capabilities"`
+	ExtraCapabilities map[string]bool   `json:"extra_capabilities"`
+	AvatarURLs        map[string]string `json:"avatar_urls"`
+}
+
+type WPNonce struct {
+	Nonce string `json:"nonce"`
+}
