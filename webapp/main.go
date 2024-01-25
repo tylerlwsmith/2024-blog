@@ -131,10 +131,7 @@ func UserMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			err = json.Unmarshal(uBytes, &u)
-			if err != nil {
-				return
-			}
+			json.Unmarshal(uBytes, &u)
 		}()
 
 		// https://fideloper.com/golang-context-http-middleware
