@@ -111,6 +111,19 @@ type WPUser struct {
 	AvatarURLs        map[string]string `json:"avatar_urls"`
 }
 
+func (u WPUser) CanEditPost(p WPPost) bool {
+	if val, ok := u.ExtraCapabilities["administrator"]; ok && val {
+		return true
+	}
+	if val, ok := u.Capabilities["edit_others_posts"]; ok && val {
+		return true
+	}
+	if val, ok := u.Capabilities["edit_posts"]; ok && val && u.Id == p.Author {
+		return true
+	}
+	return false
+}
+
 type WPNonce struct {
 	Nonce string `json:"nonce"`
 }
