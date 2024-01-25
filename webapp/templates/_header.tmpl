@@ -1,5 +1,10 @@
+{{- $user := index .Data "user" }}
 <header class="site-header">
   <div class="site-header__container">
     <a href="/" class="site-logo">Tyler Smith</a>
+
+    {{- if ne $user.Id 0 }}
+      Logged In
+    {{- end }}
   </div>
 </header>

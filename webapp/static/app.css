@@ -83,6 +83,8 @@ img {
 }
 
 .site-header__container {
+  display: flex;
+  justify-content: space-between;
   margin: 0 auto;
   max-width: calc(var(--container-width) + calc(var(--sidebar-width) * 2));
   padding: 0 var(--desktop-padding-x);

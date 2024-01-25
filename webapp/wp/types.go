@@ -105,7 +105,7 @@ type WPUser struct {
 	Nickname          string            `json:"nickname"`
 	Slug              string            `json:"slug"`
 	Roles             []string          `json:"roles"`
-	RegisteredDate    WPTime            `json:"registered_date"`
+	RegisteredDate    string            `json:"registered_date"` // Should be some kind of time object
 	Capabilities      map[string]bool   `json:"capabilities"`
 	ExtraCapabilities map[string]bool   `json:"extra_capabilities"`
 	AvatarURLs        map[string]string `json:"avatar_urls"`

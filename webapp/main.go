@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"slices"
 	"sync"
@@ -49,7 +52,7 @@ func init() {
 	tagTmpl = makeTmpl("templates/tag-show.tmpl")
 }
 
-func stripTrailingSlashes(next http.Handler) http.Handler {
+func StripTrailingSlashesMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
@@ -71,15 +74,84 @@ func stripTrailingSlashes(next http.Handler) http.Handler {
 	})
 }
 
-func UserMiddleware() {
+func UserMiddleware(next http.Handler) http.Handler {
 	// http://localhost:8080/wp-json/wp/v2/users/me?context=edit&_wpnonce=somevalue
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var u wp.WPUser
+		client := http.Client{}
+		func() {
+			nReq, err := http.NewRequest("GET", "http://wordpress/wp-json/nonce/v1/nonce", nil)
+			if err != nil {
+				return
+			}
+
+			for _, cookie := range r.Cookies() {
+				fmt.Println(cookie)
+				nReq.AddCookie(cookie)
+			}
+
+			nRes, err := client.Do(nReq)
+			if err != nil || nRes.StatusCode != 200 {
+				return
+			}
+			defer nRes.Body.Close()
+
+			nBytes, err := io.ReadAll(nRes.Body)
+			if err != nil {
+				return
+			}
+
+			var n wp.WPNonce
+			err = json.Unmarshal(nBytes, &n)
+			if err != nil {
+				return
+			}
+
+			url := fmt.Sprintf(
+				"http://wordpress/wp-json/wp/v2/users/me?context=edit&_wpnonce=%v",
+				n.Nonce,
+			)
+			uReq, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				return
+			}
+
+			for _, cookie := range r.Cookies() {
+				fmt.Println(cookie)
+				uReq.AddCookie(cookie)
+			}
+
+			uRes, err := client.Do(uReq)
+			if err != nil || uRes.StatusCode != 200 {
+				return
+			}
+			defer uRes.Body.Close()
+
+			uBytes, err := io.ReadAll(uRes.Body)
+			if err != nil {
+				return
+			}
+
+			err = json.Unmarshal(uBytes, &u)
+			if err != nil {
+				return
+			}
+		}()
+
+		// https://fideloper.com/golang-context-http-middleware
+		// https://stackoverflow.com/a/70651651/7759523
+		ctx := context.WithValue(r.Context(), "user", u)
+		newReq := r.WithContext(ctx)
+		next.ServeHTTP(w, newReq)
+	})
 }
 
 func main() {
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	r.Use(stripTrailingSlashes)
+	r.Use(StripTrailingSlashesMiddleware)
+	r.Use(UserMiddleware)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var posts *[]wp.WPPost
@@ -112,7 +184,7 @@ func main() {
 		err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   "Posts",
 			Request: *r,
-			Data:    map[string]any{"posts": posts, "tags": tags, "tagIdMap": tagIdMap},
+			Data:    map[string]any{"posts": posts, "tags": tags, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
 		})
 
 		if err != nil {
@@ -161,7 +233,7 @@ func main() {
 		err = postsTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   p.Title.Rendered,
 			Request: *r,
-			Data:    map[string]any{"post": p, "tagIdMap": tagIdMap},
+			Data:    map[string]any{"post": p, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
 		})
 
 		if err != nil {
@@ -222,7 +294,7 @@ func main() {
 		err = tagTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 			Title:   template.HTML(fmt.Sprintf("Tag: %v", t.Name)),
 			Request: *r,
-			Data:    map[string]any{"tag": t, "posts": posts, "tagIdMap": tagIdMap},
+			Data:    map[string]any{"tag": t, "posts": posts, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
 		})
 
 		if err != nil {
