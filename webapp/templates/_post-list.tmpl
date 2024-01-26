@@ -1,6 +1,5 @@
 {{ $posts := index . 0 }}
 {{ $tagIdMap := index . 1 }}
-{{ $user := index . 2 }}
 
 
 <ul class="post-list">
@@ -32,9 +31,6 @@
             {{- end }}
           {{- end }}
         </dl>
-      {{- end }}
-      {{- if $user.CanEditPost . }}
-        <div>Editable</div>
       {{- end }}
     </li>
   {{- end }}

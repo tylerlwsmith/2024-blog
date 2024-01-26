@@ -11,7 +11,7 @@
       <h1>Tag: {{ .Name }}</h1>
 
       {{- if (gt (len $posts) 0) }}
-        {{- template "_post-list.tmpl" (args $posts $tagIdMap $user) }}
+        {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
       {{- end }}
     {{- end }}
   </div>
