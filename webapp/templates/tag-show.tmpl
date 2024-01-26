@@ -10,6 +10,14 @@
     {{- with index .Data "tag" }}
       <h1>Tag: {{ .Name }}</h1>
 
+      {{- if $user.CanEditTag . }}
+        <a
+          href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
+        >
+          Edit Tag
+        </a>
+      {{- end }}
+
       {{- if (gt (len $posts) 0) }}
         {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
       {{- end }}

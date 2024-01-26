@@ -112,6 +112,9 @@ type WPUser struct {
 }
 
 func (u WPUser) CanEditPost(p WPPost) bool {
+	if !u.Exists() {
+		return false
+	}
 	if val, ok := u.ExtraCapabilities["administrator"]; ok && val {
 		return true
 	}
@@ -122,6 +125,23 @@ func (u WPUser) CanEditPost(p WPPost) bool {
 		return true
 	}
 	return false
+}
+
+func (u WPUser) CanEditTag(p WPTag) bool {
+	if !u.Exists() {
+		return false
+	}
+	if val, ok := u.ExtraCapabilities["administrator"]; ok && val {
+		return true
+	}
+	if val, ok := u.Capabilities["manage_categories"]; ok && val {
+		return true
+	}
+	return false
+}
+
+func (u WPUser) Exists() bool {
+	return u.Id != 0
 }
 
 type WPNonce struct {
