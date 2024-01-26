@@ -74,6 +74,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route( 'nonce/v1', 'nonce', [
 		'methods' => 'GET',
+		'permission_callback' => '__return_true',
 		'callback' => function () use ( $nonce ) {
 			return [
 				'nonce' => $nonce,
