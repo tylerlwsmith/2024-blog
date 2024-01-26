@@ -1,5 +1,6 @@
 {{- define "main" }}
   {{- $tagIdMap := index .Data "tagIdMap" }}
+  {{- $user := index .Data "user" }}
 
 
   <div class="spacer"></div>
@@ -25,6 +26,12 @@
       {{- end }}
 
       {{ .Content.Rendered }}
+
+      {{- if $user.CanEditPost . }}
+        <a href="/wp/wp-admin/post.php?post={{ .Id }}&action=edit">
+          Edit Post
+        </a>
+      {{- end }}
     {{- end }}
   </div>
 
