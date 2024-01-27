@@ -17,8 +17,11 @@ func main() {
 	r.Use(middleware.UserMiddleware)
 
 	r.HandleFunc("/", handlers.Homepage)
+
 	r.HandleFunc("/posts", handlers.PostIndex)
 	r.HandleFunc("/posts/{slug}", handlers.PostShow)
+
+	r.HandleFunc("/tags", handlers.TagIndex)
 	r.HandleFunc("/tags/{slug}", handlers.TagShow)
 
 	// Middleware is typically skipped when there is no matching route. Our app
