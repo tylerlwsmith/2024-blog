@@ -193,3 +193,7 @@ img {
   font-size: 0.875rem;
   color: inherit;
 }
+
+.tag-sidebar-list-item__link--selected {
+  font-weight: bold;
+}

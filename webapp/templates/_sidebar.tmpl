@@ -1,5 +1,5 @@
-{{ $requests := index . 0 }}
-{{ $tags := index . 1 }}
+{{ $tags := index . 0 }}
+{{ $slug := index . 1 }}
 
 
 <aside class="tag-sidebar">
@@ -8,7 +8,15 @@
     <ul class="tag-sidebar-list">
       {{- range $tags }}
         <li class="tag-sidebar-list-item">
-          <a href="/tags/{{ .Slug }}" class="tag-sidebar-list-item__link">
+          <a
+            href="/tags/{{ .Slug }}"
+            class="
+              tag-sidebar-list-item__link
+            {{- if (and (ne $slug "") (eq $slug .Slug)) }}
+              tag-sidebar-list-item__link--selected
+            {{- end }}
+            "
+          >
             {{ .Name }}
             ({{ .Count }})
           </a>

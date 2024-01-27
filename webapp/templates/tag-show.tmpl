@@ -1,8 +1,8 @@
 {{- define "main" }}
-  {{- $request := .Request }}
   {{- $posts := index .Data "posts" }}
   {{- $tagIdMap := index .Data "tagIdMap" }}
   {{- $tags := index .Data "tags" }}
+  {{- $tagSlug := index .Data "tagSlug" }}
   {{- $user := index .Data "user" }}
 
 
@@ -28,8 +28,7 @@
 
     </div>
 
-    {{- template "_sidebar.tmpl" (args $request $tags) }}
-
+    {{- template "_sidebar.tmpl" (args $tags $tagSlug) }}
   </div>
 
   <div class="spacer"></div>

@@ -94,11 +94,11 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 	err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   "Posts",
 		Request: *r,
-		Data:    map[string]any{
-			"posts": posts,
-			"tags": tags,
+		Data: map[string]any{
+			"posts":    posts,
+			"tags":     tags,
 			"tagIdMap": tagIdMap,
-			"user": r.Context().Value("user")
+			"user":     r.Context().Value("user"),
 		},
 	})
 
@@ -152,10 +152,10 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 	err = postShowTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   p.Title.Rendered,
 		Request: *r,
-		Data:    map[string]any{
-			"post": p,
+		Data: map[string]any{
+			"post":     p,
 			"tagIdMap": tagIdMap,
-			"user": r.Context().Value("user")
+			"user":     r.Context().Value("user"),
 		},
 	})
 
@@ -217,12 +217,13 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 	err = tagShowTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   template.HTML(fmt.Sprintf("Tag: %v", t.Name)),
 		Request: *r,
-		Data:    map[string]any{
-			"tag": t,
-			"tags": tags,
+		Data: map[string]any{
+			"tag":      t,
 			"tagIdMap": tagIdMap,
-			"posts": posts,
-			"user": r.Context().Value("user")
+			"tags":     tags,
+			"tagSlug":  slug,
+			"posts":    posts,
+			"user":     r.Context().Value("user"),
 		},
 	})
 
