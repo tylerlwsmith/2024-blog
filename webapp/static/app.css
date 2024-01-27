@@ -214,19 +214,15 @@ h6 {
   padding-bottom: 4px;
 }
 
-.post-list-item__tag-dl {
+.tag-dl {
   margin: 8px 0 0;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-.post-list-item__tag-dd {
+.tag-dd {
   margin: 0;
-}
-
-.post-list-item__tag-wrapper {
-  order: -1;
 }
 
 .tag {

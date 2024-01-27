@@ -17,16 +17,14 @@
         {{ .Date.Format "January 2, 2006" }}
       </time>
       {{- if len .Tags }}
-        <dl class="post-list-item__tag-dl">
+        <dl class="tag-dl">
           <dt class="sr-only">Tags</dt>
           {{- range .Tags }}
             {{ with (index $tagIdMap .) }}
-              <dd class="post-list-item__tag-dd">
-                <span class="post-list-item__tag-wrapper">
-                  <a href="/tags/{{ .Slug }}" class="tag">
-                    {{ .Name }}
-                  </a>
-                </span>
+              <dd class="tag-dd">
+                <a href="/tags/{{ .Slug }}" class="tag">
+                  {{ .Name }}
+                </a>
               </dd>
             {{- end }}
           {{- end }}
