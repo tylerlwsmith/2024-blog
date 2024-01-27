@@ -13,12 +13,21 @@
       {{- with index .Data "tag" }}
         <h1 class="page-title">Tag: {{ .Name }}</h1>
 
+        {{- if .HasDescription }}
+          <p class="tag-body">
+            {{ .Description }}
+          </p>
+        {{- end }}
+
         {{- if $user.CanEditTag . }}
-          <a
-            href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
-          >
-            Edit Tag
-          </a>
+          <div class="edit-button-wrapper--mb">
+            <a
+              href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
+              class="edit-button"
+            >
+              Edit Tag
+            </a>
+          </div>
         {{- end }}
 
         {{- if (gt (len $posts) 0) }}

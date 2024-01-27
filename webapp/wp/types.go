@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -15,6 +16,10 @@ type WPTag struct {
 	Name        string `json:"name"`
 	Slug        string `json:"slug"`
 	// There's an excluded "meta" field because I don't know what's in it.
+}
+
+func (t WPTag) HasDescription() bool {
+	return strings.TrimSpace(string(t.Description)) != ""
 }
 
 type WPPost struct {
@@ -40,6 +45,10 @@ type WPPost struct {
 	Meta          WPMeta       `json:"meta"`
 	Categories    []int        `json:"categories"`
 	Tags          []int        `json:"tags"`
+}
+
+func (p WPPost) HasContent() bool {
+	return strings.TrimSpace(string(p.Content.Rendered)) != ""
 }
 
 type WPTime struct {

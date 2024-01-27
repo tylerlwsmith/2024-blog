@@ -219,12 +219,17 @@ h6 {
   padding-bottom: 4px;
 }
 
-.post-body {
+.post-body,
+.tag-body {
   margin: 12px 0 24px;
 }
 
-.edit-button-wrapper {
+.edit-button-wrapper--mt {
   margin-top: 32px;
+}
+
+.edit-button-wrapper--mb {
+  margin-bottom: 32px;
 }
 
 .edit-button {
