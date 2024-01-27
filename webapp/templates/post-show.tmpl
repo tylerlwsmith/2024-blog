@@ -9,9 +9,12 @@
     {{- with index .Data "post" }}
       <h1 class="page-title">{{ .Title.Rendered }}</h1>
 
-      <time datetime="{{ .Date.Format "2006-01-02" }}" class="post-date">
-        {{ .Date.Format "January 2, 2006" }}
-      </time>
+      {{- /* The flex wrapper is a hack to get the position to match the homepage */}}
+      <div class="flex">
+        <time datetime="{{ .Date.Format "2006-01-02" }}" class="post-date">
+          {{ .Date.Format "January 2, 2006" }}
+        </time>
+      </div>
 
       <div class="post-body">
         {{ .Content.Rendered }}
