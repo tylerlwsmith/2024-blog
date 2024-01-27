@@ -59,8 +59,20 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 	wg := sync.WaitGroup{}
 
 	wg.Add(2)
-	go func() { defer wg.Done(); posts, _, postErr = api.Posts().GetAll() }()
-	go func() { defer wg.Done(); tags, _, tagErr = api.Tags().GetAll() }()
+	go func() {
+		defer wg.Done()
+		posts, _, postErr = api.Posts().
+			SetParam("orderby", "date").
+			SetParam("order", "desc").
+			GetAll()
+	}()
+	go func() {
+		defer wg.Done()
+		tags, _, tagErr = api.Tags().
+			SetParam("orderby", "name").
+			SetParam("order", "asc").
+			GetAll()
+	}()
 	wg.Wait()
 
 	if postErr != nil {
@@ -117,7 +129,11 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 	}
 	p := (*posts)[0]
 
-	tags, _, err := api.Tags().SetParam("include", p.Tags).GetAll()
+	tags, _, err := api.Tags().
+		SetParam("orderby", "name").
+		SetParam("order", "asc").
+		SetParam("include", p.Tags).
+		GetAll()
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprint(w, "There was an error.\n", err.Error())
@@ -182,7 +198,11 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 	slices.Sort(postTagIds) // mutates original slice.
 	uniqTagIds := slices.Compact(postTagIds)
 
-	postTags, _, err := api.Tags().SetParam("include", uniqTagIds).GetAll()
+	postTags, _, err := api.Tags().
+		SetParam("orderby", "name").
+		SetParam("order", "asc").
+		SetParam("include", uniqTagIds).
+		GetAll()
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprint(w, "there was an error.\n", err.Error())
