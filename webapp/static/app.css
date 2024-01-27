@@ -19,7 +19,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   color: #404040;
-  border-top: 4px solid turquoise;
 }
 
 body {
@@ -79,6 +78,7 @@ h6 {
     "site-footer";
   grid-template-rows: auto 1fr auto;
   min-height: 100vh; /** TODO: this has problems on mobile */
+  border-top: 4px solid turquoise;
 }
 
 .site-header-area {
