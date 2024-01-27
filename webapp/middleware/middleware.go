@@ -73,7 +73,6 @@ func UserMiddleware(next http.Handler) http.Handler {
 			}
 
 			for _, cookie := range r.Cookies() {
-				fmt.Println(cookie)
 				uReq.AddCookie(cookie)
 			}
 
