@@ -1,10 +1,12 @@
 {{- $user := index .Data "user" }}
+
+
 <header class="site-header">
   <div class="site-header__container">
     <a href="/" class="site-logo">Tyler Smith</a>
 
     {{- if ne $user.Id 0 }}
-      <a href="/wp/wp-admin/">WordPress</a>
+      <a href="/wp/wp-admin/" class="site-header__admin-button">Admin &rarr;</a>
     {{- end }}
   </div>
 </header>
