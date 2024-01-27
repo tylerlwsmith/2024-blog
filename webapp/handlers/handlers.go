@@ -36,7 +36,7 @@ func init() {
 				"templates/_layout.tmpl",
 				"templates/_header.tmpl",
 				"templates/_footer.tmpl",
-				"templates/_sidebar.tmpl",
+				"templates/_tag-sidebar.tmpl",
 				"templates/_post-list.tmpl",
 			),
 	)

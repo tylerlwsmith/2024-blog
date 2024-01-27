@@ -8,12 +8,12 @@
 
   <div class="grid-layout-container">
     <div class="grid-layout-container__primary ">
-      <h1>Posts</h1>
+      <h1 class="page-title">Posts</h1>
 
       {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
     </div>
 
-    {{- template "_sidebar.tmpl" (args $tags nil) }}
+    {{- template "_tag-sidebar.tmpl" (args $tags nil) }}
   </div>
 
   <div class="spacer"></div>
