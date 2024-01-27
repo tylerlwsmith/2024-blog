@@ -1,27 +1,35 @@
 {{- define "main" }}
-  {{- $tagIdMap := index .Data "tagIdMap" }}
+  {{- $request := .Request }}
   {{- $posts := index .Data "posts" }}
+  {{- $tagIdMap := index .Data "tagIdMap" }}
+  {{- $tags := index .Data "tags" }}
   {{- $user := index .Data "user" }}
 
 
   <div class="spacer"></div>
 
-  <div class="container">
-    {{- with index .Data "tag" }}
-      <h1>Tag: {{ .Name }}</h1>
+  <div class="grid-layout-container">
+    <div class="grid-layout-container__primary ">
+      {{- with index .Data "tag" }}
+        <h1>Tag: {{ .Name }}</h1>
 
-      {{- if $user.CanEditTag . }}
-        <a
-          href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
-        >
-          Edit Tag
-        </a>
+        {{- if $user.CanEditTag . }}
+          <a
+            href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
+          >
+            Edit Tag
+          </a>
+        {{- end }}
+
+        {{- if (gt (len $posts) 0) }}
+          {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
+        {{- end }}
       {{- end }}
 
-      {{- if (gt (len $posts) 0) }}
-        {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
-      {{- end }}
-    {{- end }}
+    </div>
+
+    {{- template "_sidebar.tmpl" (args $request $tags) }}
+
   </div>
 
   <div class="spacer"></div>

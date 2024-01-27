@@ -1,0 +1,19 @@
+{{ $requests := index . 0 }}
+{{ $tags := index . 1 }}
+
+
+<aside class="tag-sidebar">
+  <h2>Tags</h2>
+  <nav>
+    <ul class="tag-sidebar-list">
+      {{- range $tags }}
+        <li class="tag-sidebar-list-item">
+          <a href="/tags/{{ .Slug }}" class="tag-sidebar-list-item__link">
+            {{ .Name }}
+            ({{ .Count }})
+          </a>
+        </li>
+      {{- end }}
+    </ul>
+  </nav>
+</aside>

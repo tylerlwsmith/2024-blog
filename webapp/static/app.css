@@ -66,6 +66,24 @@ img {
   padding: 0 var(--desktop-padding-x);
 }
 
+.grid-layout-container {
+  display: grid;
+  grid-template-areas: "left center right";
+  grid-template-columns: 1fr minmax(0, 800px) 1fr;
+}
+
+.grid-layout-container__primary {
+  flex-grow: 1;
+  flex-shrink: 1;
+  padding: 0 20px;
+}
+
+@media (max-width: 799px) {
+  .grid-layout-container {
+    display: block;
+  }
+}
+
 .spacer {
   padding-bottom: 40px;
 }
@@ -98,18 +116,6 @@ img {
 
 .page-title {
   /* todo */
-}
-
-.homepage-wrapper {
-  display: grid;
-  grid-template-areas: "left center right";
-  grid-template-columns: 1fr minmax(0, 800px) 1fr;
-}
-
-@media (max-width: 799px) {
-  .homepage-wrapper {
-    display: block;
-  }
 }
 
 .post-list {

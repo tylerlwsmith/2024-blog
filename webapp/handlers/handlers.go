@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"slices"
 	"sync"
 	"time"
 	"webapp/models"
@@ -37,6 +36,7 @@ func init() {
 				"templates/_layout.tmpl",
 				"templates/_header.tmpl",
 				"templates/_footer.tmpl",
+				"templates/_sidebar.tmpl",
 				"templates/_post-list.tmpl",
 			),
 	)
@@ -94,7 +94,12 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 	err := homepageTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   "Posts",
 		Request: *r,
-		Data:    map[string]any{"posts": posts, "tags": tags, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
+		Data:    map[string]any{
+			"posts": posts,
+			"tags": tags,
+			"tagIdMap": tagIdMap,
+			"user": r.Context().Value("user")
+		},
 	})
 
 	if err != nil {
@@ -147,7 +152,11 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 	err = postShowTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   p.Title.Rendered,
 		Request: *r,
-		Data:    map[string]any{"post": p, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
+		Data:    map[string]any{
+			"post": p,
+			"tagIdMap": tagIdMap,
+			"user": r.Context().Value("user")
+		},
 	})
 
 	if err != nil {
@@ -165,7 +174,7 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	slug := vars["slug"]
 
-	tags, _, err := api.Tags().
+	matchingTags, _, err := api.Tags().
 		SetParam("slug", slug).
 		SetParam("per_page", 1).
 		Get()
@@ -175,13 +184,13 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "tag error:\n %v", err.Error())
 		return
 	}
-	if len(*tags) == 0 {
+	if len(*matchingTags) == 0 {
 		w.WriteHeader(404)
 		fmt.Fprint(w, "Post not found.\n")
 		fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
 		return
 	}
-	t := (*tags)[0]
+	t := (*matchingTags)[0]
 
 	posts, _, err := api.Posts().SetParam("tags", t.Id).GetAll()
 	if err != nil {
@@ -190,18 +199,10 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postTagIds := []int{}
-	for _, p := range *posts {
-		postTagIds = append(postTagIds, p.Tags...)
-	}
-	// Dedupe IDs. https://stackoverflow.com/a/76471309/7759523
-	slices.Sort(postTagIds) // mutates original slice.
-	uniqTagIds := slices.Compact(postTagIds)
-
-	postTags, _, err := api.Tags().
+	var tags *[]wp.WPTag
+	tags, _, err = api.Tags().
 		SetParam("orderby", "name").
 		SetParam("order", "asc").
-		SetParam("include", uniqTagIds).
 		GetAll()
 	if err != nil {
 		w.WriteHeader(500)
@@ -209,14 +210,20 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tagIdMap := map[int]wp.WPTag{}
-	for _, t := range *postTags {
+	for _, t := range *tags {
 		tagIdMap[t.Id] = t
 	}
 
 	err = tagShowTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   template.HTML(fmt.Sprintf("Tag: %v", t.Name)),
 		Request: *r,
-		Data:    map[string]any{"tag": t, "posts": posts, "tagIdMap": tagIdMap, "user": r.Context().Value("user")},
+		Data:    map[string]any{
+			"tag": t,
+			"tags": tags,
+			"tagIdMap": tagIdMap,
+			"posts": posts,
+			"user": r.Context().Value("user")
+		},
 	})
 
 	if err != nil {
