@@ -35,6 +35,7 @@ func init() {
 				"templates/_layout.tmpl",
 				"templates/_header.tmpl",
 				"templates/_footer.tmpl",
+				"templates/_tag-list.tmpl",
 				"templates/_tag-sidebar.tmpl",
 				"templates/_post-list.tmpl",
 			),
@@ -55,6 +56,26 @@ func do404(w http.ResponseWriter, r *http.Request, msg string) {
 	w.WriteHeader(404)
 
 	title := "404 Error"
+	err := errorTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+		Title:   template.HTML(title),
+		Request: *r,
+		Data: map[string]any{
+			"error": msg,
+			"title": title,
+			"user":  r.Context().Value("user"),
+		},
+	})
+
+	if err != nil {
+		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+		return
+	}
+}
+
+func do500(w http.ResponseWriter, r *http.Request, msg string) {
+	w.WriteHeader(500)
+
+	title := "500 Error"
 	err := errorTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
 		Title:   template.HTML(title),
 		Request: *r,
@@ -95,6 +116,7 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
+	// errs :=
 	if postErr != nil {
 		fmt.Fprintf(w, "post error:\n %v", postErr.Error())
 	}

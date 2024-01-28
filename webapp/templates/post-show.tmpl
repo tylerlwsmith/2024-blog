@@ -20,20 +20,7 @@
         {{ .Content.Rendered }}
       </div>
 
-      {{- if len .Tags }}
-        <dl class="tag-dl">
-          <dt class="sr-only">Tags</dt>
-          {{- range .Tags }}
-            {{ with (index $tagIdMap .) }}
-              <dd class="tag-dd">
-                <a href="/tags/{{ .Slug }}" class="tag">
-                  {{ .Name }}
-                </a>
-              </dd>
-            {{- end }}
-          {{- end }}
-        </dl>
-      {{- end }}
+      {{- template "_tag-list.tmpl" (args .Tags $tagIdMap) }}
 
       {{- if $user.CanEditPost . }}
         <div class="button-wrapper--mt">

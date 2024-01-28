@@ -1,0 +1,17 @@
+{{ $tags := index . 0 }}
+{{ $tagIdMap := index . 1 }}
+
+{{- if len $tags }}
+  <dl class="tag-dl">
+    <dt class="sr-only">Tags</dt>
+    {{- range $tags }}
+      {{ with (index $tagIdMap .) }}
+        <dd class="tag-dd">
+          <a href="/tags/{{ .Slug }}" class="tag">
+            {{ .Name }}
+          </a>
+        </dd>
+      {{- end }}
+    {{- end }}
+  </dl>
+{{- end }}
