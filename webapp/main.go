@@ -5,15 +5,15 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"webapp/embeds"
 	"webapp/handlers"
 	"webapp/middleware"
-	"webapp/static"
 )
 
 func main() {
 	r := mux.NewRouter()
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(static.Static))))
+	r.PathPrefix("/static/").Handler(http.FileServer(http.FS(embeds.Static)))
 
 	r.Use(middleware.StripTrailingSlashesMiddleware)
 	r.Use(middleware.UserMiddleware)

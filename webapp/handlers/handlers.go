@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"webapp/embeds"
 	"webapp/models"
 	"webapp/wp"
 	"webapp/wp/api"
@@ -32,7 +33,8 @@ func init() {
 					return args
 				},
 			}).
-			ParseFiles(
+			ParseFS(
+				embeds.Templates,
 				"templates/_layout.tmpl",
 				"templates/_header.tmpl",
 				"templates/_footer.tmpl",
@@ -44,7 +46,7 @@ func init() {
 
 	makeTmpl := func(file string) *template.Template {
 		c := template.Must(tmplCommon.Clone())
-		return template.Must(c.ParseFiles(file))
+		return template.Must(c.ParseFS(embeds.Templates, file))
 	}
 
 	homepageTmpl = makeTmpl("templates/post-index.tmpl")
