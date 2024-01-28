@@ -1,5 +1,6 @@
 {{- define "main" }}
   {{- $posts := index .Data "posts" }}
+  {{- $tag := index .Data "tag" }}
   {{- $tagIdMap := index .Data "tagIdMap" }}
   {{- $tags := index .Data "tags" }}
   {{- $tagSlug := index .Data "tagSlug" }}
@@ -10,7 +11,7 @@
 
   <div class="grid-layout-container">
     <div class="grid-layout-container__primary ">
-      {{- with index .Data "tag" }}
+      {{- with $tag }}
         <h1 class="page-title">Tag: {{ .Name }}</h1>
 
         {{- if .HasDescription }}
@@ -33,7 +34,9 @@
         {{- if (gt (len $posts) 0) }}
           {{- template "_post-list.tmpl" (args $posts $tagIdMap) }}
         {{- else }}
-          <p>No matching posts found.</p>
+          <p>
+            No posts were found with the <strong>"{{ $tag.Name }}"</strong> tag.
+          </p>
         {{- end }}
       {{- end }}
 
