@@ -1,17 +1,25 @@
-FROM golang:1.21
+FROM golang:1.21 AS base
 
 RUN mkdir -p /srv/app
 
 WORKDIR /srv/app
 
+FROM base AS development
+
 RUN go install github.com/cosmtrek/air@latest
 
-# Pre-copy/cache go.mod for pre-downloading dependencies and only redownloading
-# them in subsequent builds if they change.
+CMD ["air"]
+
+FROM base AS build
+
 COPY webapp/go.mod webapp/go.sum ./
 RUN go mod download && go mod verify
 
-# COPY . .
-# RUN go build -v -o /usr/local/bin/app ./...
+COPY . .
+RUN go build -v -o webapp
 
-CMD ["air"]
+FROM scratch AS production
+
+COPY --from=build --chown=root:root /srv/app/webapp /
+
+CMD ["/webapp"]
