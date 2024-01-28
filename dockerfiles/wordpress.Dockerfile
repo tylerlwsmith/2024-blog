@@ -79,3 +79,5 @@ ENTRYPOINT [ "/var/www/html/entrypoint.sh" ]
 # Setting ENTRYPOINT will reset CMD to an empty value if CMD is defined in
 # the base image, so we must reset CMD to the base image value.
 CMD ["apache2-foreground"]
+
+FROM base AS development
