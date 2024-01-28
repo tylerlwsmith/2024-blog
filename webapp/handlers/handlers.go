@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 	"webapp/models"
@@ -65,7 +66,6 @@ func do404(w http.ResponseWriter, r *http.Request, msg string) {
 			"user":  r.Context().Value("user"),
 		},
 	})
-
 	if err != nil {
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 		return
@@ -85,7 +85,6 @@ func do500(w http.ResponseWriter, r *http.Request, msg string) {
 			"user":  r.Context().Value("user"),
 		},
 	})
-
 	if err != nil {
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 		return
@@ -116,15 +115,15 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	// errs :=
+	var errs []string
 	if postErr != nil {
-		fmt.Fprintf(w, "post error:\n %v", postErr.Error())
+		errs = append(errs, fmt.Sprintf("Post error:\n%v", postErr.Error()))
 	}
 	if tagErr != nil {
-		fmt.Fprintf(w, "tag error:\n %v", tagErr.Error())
+		errs = append(errs, fmt.Sprintf("Tag error:\n%v", postErr.Error()))
 	}
 	if postErr != nil || tagErr != nil {
-		w.WriteHeader(500)
+		do500(w, r, strings.Join(errs, "\n"))
 		return
 	}
 
@@ -143,9 +142,7 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 			"user":     r.Context().Value("user"),
 		},
 	})
-
 	if err != nil {
-		w.WriteHeader(500)
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 	}
 }
@@ -164,8 +161,7 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 		Get()
 
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "post error:\n %v", err.Error())
+		do500(w, r, fmt.Sprintf("Post error:\n %v", err.Error()))
 		return
 	}
 	if len(*posts) == 0 {
@@ -180,8 +176,7 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 		SetParam("include", p.Tags).
 		GetAll()
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprint(w, "There was an error.\n", err.Error())
+		do500(w, r, fmt.Sprintf("There was an error.\n%v", err.Error()))
 		return
 	}
 	tagIdMap := map[int]wp.WPTag{}
@@ -198,11 +193,8 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 			"user":     r.Context().Value("user"),
 		},
 	})
-
 	if err != nil {
-		w.WriteHeader(500)
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
-		return
 	}
 }
 
@@ -220,8 +212,7 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		Get()
 
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "tag error:\n %v", err.Error())
+		do500(w, r, fmt.Sprintf("Tag error:\n%v", err.Error()))
 		return
 	}
 	if len(*matchingTags) == 0 {
@@ -232,8 +223,7 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 
 	posts, _, err := api.Posts().SetParam("tags", t.Id).GetAll()
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprint(w, "there was an error.\n", err.Error())
+		do500(w, r, fmt.Sprintf("There was an error.\n%v", err.Error()))
 		return
 	}
 
@@ -243,8 +233,7 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		SetParam("order", "asc").
 		GetAll()
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprint(w, "there was an error.\n", err.Error())
+		do500(w, r, fmt.Sprintf("There was an error.\n%v", err.Error()))
 		return
 	}
 	tagIdMap := map[int]wp.WPTag{}
@@ -264,11 +253,8 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 			"user":     r.Context().Value("user"),
 		},
 	})
-
 	if err != nil {
-		w.WriteHeader(500)
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
-		return
 	}
 }
 
