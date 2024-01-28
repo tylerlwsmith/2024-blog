@@ -5,6 +5,7 @@ services:
     build:
       dockerfile: dockerfiles/caddy.Dockerfile
       context: .
+      target: ${BUILD_TARGET:-development}
     restart: no
     ports:
       - 127.0.0.1:8080:80
@@ -17,6 +18,7 @@ services:
     build:
       dockerfile: ./dockerfiles/webapp.Dockerfile
       context: .
+      target: ${BUILD_TARGET:-development}
     restart: no
     depends_on:
       - wordpress
@@ -27,6 +29,7 @@ services:
     build:
       dockerfile: ./dockerfiles/wordpress.Dockerfile
       context: .
+      target: ${BUILD_TARGET:-development}
       args:
         USER_UID: ${USER_UID:-1234}
         USER_GID: ${USER_GID:-1234}
