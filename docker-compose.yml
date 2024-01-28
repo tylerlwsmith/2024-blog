@@ -8,11 +8,14 @@ services:
       target: ${BUILD_TARGET:-development}
     restart: no
     ports:
-      - 127.0.0.1:8080:80
+      - 127.0.0.1:80:80
+      - 127.0.0.1:443:443
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    environment:
+      SITE_HOSTNAME: localhost:80
 
   webapp:
     build:
@@ -43,8 +46,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-password}
 
       WP_ENV: ${WP_ENV:-development}
-      WP_HOME: ${WP_HOME:-http://localhost:8080}
-      WP_SITEURL: ${WP_SITEURL:-http://localhost:8080/wp}
+      WP_HOME: ${WP_HOME:-http://localhost:80}
+      WP_SITEURL: ${WP_SITEURL:-http://localhost:80/wp}
       WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
 
       AUTH_KEY: '<pHod%g37<t7<G^MC3XO().=.oH-ICqZ6NM.b;qGf9IV#emF-hF)*r!ggea!Zm8P'
@@ -57,7 +60,7 @@ services:
       NONCE_SALT: '[hnA;=h/P:^?+Z_DvDx55xV<{UC@b2,o_b-Sl6Yz7FiDnSFYyyUj!lyk>EKNNrLd'
 
       # The following variables are only used during the first container boot.
-      WORDPRESS_URL: ${WORDPRESS_URL:-localhost:8080}
+      WORDPRESS_URL: ${WORDPRESS_URL:-localhost:80}
       WORDPRESS_USERNAME: ${WP_USERNAME:-admin}
       WORDPRESS_PASSWORD: ${WP_PASSWORD:-password}
       WORDPRESS_EMAIL: ${WP_EMAIL:-test@example.com}

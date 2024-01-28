@@ -1,4 +1,6 @@
-:80 {
+# Note: We can't use $HOSTNAME as the env name because it's used by Docker.
+
+{$SITE_HOSTNAME:localhost:80} {
 	bind 0.0.0.0
 	encode zstd gzip
 	@wordpress {
@@ -16,4 +18,9 @@
 
 	reverse_proxy @wordpress wordpress:80
 	reverse_proxy webapp:3000
+}
+
+www.{$SITE_HOSTNAME:localhost:80} {
+	bind 0.0.0.0
+	redir {scheme}://{$SITE_HOSTNAME:localhost:80}{uri}
 }
