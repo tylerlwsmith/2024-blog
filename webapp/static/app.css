@@ -182,7 +182,14 @@ h6 {
 }
 
 .page-title {
+  font-size: 2.5rem;
   margin-bottom: 1em;
+}
+
+@media (max-width: 799px) {
+  .page-title {
+    font-size: 2rem;
+  }
 }
 
 .post-list {
