@@ -2,6 +2,10 @@
   --sidebar-width: 240px;
   --desktop-padding-x: 20px;
   --container-width: 800px;
+  --button-color: #008577;
+  --button-color--hover: #00665c;
+  --light-gray: #ddd;
+  --lighter-gray: #eee;
 }
 
 *,
@@ -141,7 +145,7 @@ h6 {
 
 .site-header__admin-button {
   display: inline-flex;
-  background: hsl(174 100% 26% / 1);
+  background: var(--button-color);
   text-decoration: none;
   align-items: center;
   padding: 0 16px;
@@ -151,7 +155,7 @@ h6 {
 }
 
 .site-header__admin-button:hover {
-  background: hsl(174 100% 20% / 1);
+  background: var(--button-color--hover);
 }
 
 .site-header__container,
@@ -165,8 +169,8 @@ h6 {
 }
 
 .site-footer {
-  background-color: #eee;
-  border-top: 1px solid #ddd;
+  background-color: var(--lighter-gray);
+  border-top: 1px solid var(--light-gray);
   padding-top: 16px;
   padding-bottom: 16px;
   display: grid;
@@ -241,7 +245,7 @@ h6 {
 
 .button {
   display: inline-block;
-  background: hsl(174 100% 26% / 1);
+  background: var(--button-color);
   text-decoration: none;
   align-items: center;
   padding: 8px 32px;
@@ -251,7 +255,7 @@ h6 {
 }
 
 .button:hover {
-  background: hsl(174 100% 20% / 1);
+  background: var(--button-color--hover);
 }
 
 .tag-dl {
@@ -268,8 +272,8 @@ h6 {
 .tag {
   display: inline-block;
   padding: 2px 8px;
-  border: 1px solid #ddd;
-  background: #eee;
+  border: 1px solid var(--light-gray);
+  background: var(--lighter-gray);
   font-size: 0.875rem;
   color: #444;
   text-decoration: none;
@@ -277,7 +281,7 @@ h6 {
 }
 
 .tag:hover {
-  background: #ddd;
+  background: var(--light-gray);
 }
 
 .tag-sidebar {
