@@ -1,0 +1,19 @@
+{{- define "main" }}
+  {{ $title := index .Data "title" }}
+  {{ $error := index .Data "error" }}
+  <div class="spacer"></div>
+
+  <div class="container">
+    <h1 class="page-title">{{ $title }}</h1>
+    <pre>
+      {{- $error }}
+    </pre
+    >
+
+    <div class="button-wrapper--mb">
+      <a href="/" class="button">Go to Homepage &rarr;</a>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+{{ end }}

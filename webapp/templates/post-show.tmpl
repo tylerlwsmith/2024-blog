@@ -36,10 +36,10 @@
       {{- end }}
 
       {{- if $user.CanEditPost . }}
-        <div class="edit-button-wrapper--mt">
+        <div class="button-wrapper--mt">
           <a
             href="/wp/wp-admin/post.php?post={{ .Id }}&action=edit"
-            class="edit-button"
+            class="button"
           >
             Edit Post &rarr;
           </a>

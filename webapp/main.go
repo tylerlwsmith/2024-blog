@@ -28,7 +28,7 @@ func main() {
 	// will strip trailing slashes so we need a custom NotFoundHandler.
 	// https://github.com/gorilla/mux/issues/636
 	// https://stackoverflow.com/a/56937571/7759523
-	r.NotFoundHandler = r.NewRoute().HandlerFunc(http.NotFound).GetHandler()
+	r.NotFoundHandler = r.NewRoute().HandlerFunc(handlers.NotFoundHandler).GetHandler()
 
 	http.ListenAndServe(":3000", r)
 }

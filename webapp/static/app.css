@@ -223,15 +223,15 @@ h6 {
   margin: 12px 0 24px;
 }
 
-.edit-button-wrapper--mt {
+.button-wrapper--mt {
   margin-top: 32px;
 }
 
-.edit-button-wrapper--mb {
+.button-wrapper--mb {
   margin-bottom: 32px;
 }
 
-.edit-button {
+.button {
   display: inline-block;
   background: hsl(174 100% 26% / 1);
   text-decoration: none;
@@ -242,7 +242,7 @@ h6 {
   font-size: 0.875rem;
 }
 
-.edit-button:hover {
+.button:hover {
   background: hsl(174 100% 20% / 1);
 }
 

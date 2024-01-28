@@ -20,10 +20,10 @@
         {{- end }}
 
         {{- if $user.CanEditTag . }}
-          <div class="edit-button-wrapper--mb">
+          <div class="button-wrapper--mb">
             <a
-              href="http://localhost:8080/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
-              class="edit-button"
+              href="/wp/wp-admin/term.php?taxonomy=post_tag&tag_ID={{ .Id }}&post_type=post"
+              class="button"
             >
               Edit Tag &rarr;
             </a>

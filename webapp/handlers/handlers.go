@@ -17,8 +17,7 @@ var homepageTmpl *template.Template
 var postShowTmpl *template.Template
 var tagShowTmpl *template.Template
 
-// var http404Tmpl *template.Template
-// var http500Tmpl *template.Template
+var errorTmpl *template.Template
 
 func init() {
 	var tmplCommon = template.Must(
@@ -49,6 +48,27 @@ func init() {
 	homepageTmpl = makeTmpl("templates/post-index.tmpl")
 	postShowTmpl = makeTmpl("templates/post-show.tmpl")
 	tagShowTmpl = makeTmpl("templates/tag-show.tmpl")
+	errorTmpl = makeTmpl(("templates/error.tmpl"))
+}
+
+func do404(w http.ResponseWriter, r *http.Request, msg string) {
+	w.WriteHeader(404)
+
+	title := "404 Error"
+	err := errorTmpl.ExecuteTemplate(w, "_layout.tmpl", models.PageData{
+		Title:   template.HTML(title),
+		Request: *r,
+		Data: map[string]any{
+			"error": msg,
+			"title": title,
+			"user":  r.Context().Value("user"),
+		},
+	})
+
+	if err != nil {
+		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
+		return
+	}
 }
 
 func Homepage(w http.ResponseWriter, r *http.Request) {
@@ -127,9 +147,7 @@ func PostShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(*posts) == 0 {
-		w.WriteHeader(404)
-		fmt.Fprint(w, "Post not found.\n")
-		fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
+		do404(w, r, "Post not found.\n")
 		return
 	}
 	p := (*posts)[0]
@@ -185,9 +203,7 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(*matchingTags) == 0 {
-		w.WriteHeader(404)
-		fmt.Fprint(w, "Post not found.\n")
-		fmt.Fprint(w, "http://wordpress:80/wp-json/wp/v2/posts?slug="+slug)
+		do404(w, r, "Tag not found.\n")
 		return
 	}
 	t := (*matchingTags)[0]
@@ -232,4 +248,8 @@ func TagShow(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "There was an error executing the templates.\n", err.Error())
 		return
 	}
+}
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	do404(w, r, "Page not found.\n")
 }
