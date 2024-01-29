@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -32,5 +33,6 @@ func main() {
 	// https://stackoverflow.com/a/56937571/7759523
 	r.NotFoundHandler = r.NewRoute().HandlerFunc(handlers.NotFoundHandler).GetHandler()
 
+	fmt.Println("Starting webapp server...")
 	http.ListenAndServe(":3000", r)
 }

@@ -11,9 +11,9 @@ services:
       - 127.0.0.1:80:80
       - 127.0.0.1:443:443
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
     environment:
       SITE_HOSTNAME: localhost:80
 

@@ -13,8 +13,10 @@ CMD ["air"]
 
 FROM base AS build
 
-COPY . .
-RUN go build -v -o webapp
+COPY webapp/ .
+# Build without anything that could possibly link outside.
+# https://stackoverflow.com/a/55106860/7759523
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /srv/app/webapp
 
 FROM scratch AS production
 

@@ -81,3 +81,8 @@ ENTRYPOINT [ "/var/www/html/entrypoint.sh" ]
 CMD ["apache2-foreground"]
 
 FROM base AS development
+
+FROM base AS production
+
+COPY wordpress/ .
+RUN composer install
