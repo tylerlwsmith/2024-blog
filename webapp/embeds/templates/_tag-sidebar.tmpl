@@ -1,27 +1,28 @@
 {{ $tags := index . 0 }}
 {{ $slug := index . 1 }}
 
-
-<aside class="tag-sidebar">
-  <h2 class="tag-sidebar-heading">Topics</h2>
-  <nav>
-    <ul class="tag-sidebar-list">
-      {{- range $tags }}
-        <li class="tag-sidebar-list-item">
-          <a
-            href="/tags/{{ .Slug }}"
-            class="
-              tag-sidebar-list-item__link
-            {{- if (and (ne $slug "") (eq $slug .Slug)) }}
-              tag-sidebar-list-item__link--selected
-            {{- end }}
-            "
-          >
-            {{ .Name }}
-            ({{ .Count }})
-          </a>
-        </li>
-      {{- end }}
-    </ul>
-  </nav>
-</aside>
+{{- if gt (len $tags) 0 }}
+  <aside class="tag-sidebar">
+    <h2 class="tag-sidebar-heading">Topics</h2>
+    <nav>
+      <ul class="tag-sidebar-list">
+        {{- range $tags }}
+          <li class="tag-sidebar-list-item">
+            <a
+              href="/tags/{{ .Slug }}"
+              class="
+                tag-sidebar-list-item__link
+              {{- if (and (ne $slug "") (eq $slug .Slug)) }}
+                tag-sidebar-list-item__link--selected
+              {{- end }}
+              "
+            >
+              {{ .Name }}
+              ({{ .Count }})
+            </a>
+          </li>
+        {{- end }}
+      </ul>
+    </nav>
+  </aside>
+{{- end }}
