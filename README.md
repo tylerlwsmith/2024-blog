@@ -1,6 +1,6 @@
 # Headless WordPress with Go front-end (WIP)
 
-**This project was a huge mistake.** I built this as a relatively new Go programmer, thinking I could build a blog faster _and_ get more experience with Go if I built a Go front-end for headless WordPress. Instead, I ran into every sharp edge of WordPress. I completed the project for the sake of finishing it, but I certainly wouldn't recommend using this.
+**This project was a huge mistake.** I built this as a relatively new Go programmer, thinking I could build a blog faster _and_ get more experience with Go if I built a Go front-end for headless WordPress via the [WordPress REST API](https://developer.wordpress.org/rest-api/). Instead, I ran into every sharp edge of WordPress. I completed the project for the sake of finishing it, but I certainly wouldn't recommend using this.
 
 ## Local setup
 
@@ -28,6 +28,25 @@ After that, install the WordPress dependencies.
 docker compose run --rm wordpress composer install
 ```
 
+Run the following [WP-CLI](https://wp-cli.org/) commands to create the WordPress site, replacing the placeholder values with the desired username, password and email.
+
+```sh
+docker-compose run --rm wordpress wp core install \
+    --url="http://localhost" \
+    --title="Blog" \
+    --admin_user="<your_username>" \
+    --admin_password="<your_password>" \
+    --admin_email="<your_email>"
+```
+
+Override WordPress's default settings.
+
+```sh
+docker-compose run --rm wordpress wp theme activate headless-wp-site
+docker-compose run --rm wordpress wp rewrite structure '/posts/%postname%/'
+docker-compose run --rm wordpress wp rewrite structure --tag-base='tags'
+```
+
 **Optional:** The Go web application uses the NPM package `prettier` and `prettier-plugin-go-template` to format the Go template files. If you have NPM installed on the host machine, run the following command from the project's main directory:
 
 ```sh
@@ -52,53 +71,34 @@ You can build full production(ish) containers using the following command:
 BUILD_TARGET=production docker compose build
 ```
 
-**The `docker-compose.yml` file is not completely suitable for building or running production containers.**
+**The `docker-compose.yml` file is not completely suitable for building or running production containers.** The services need the `image` property set in the Compose file to push to a container registry, and the services would need the volumes removed to ensure that the files running are from inside the container instead of mounted from the host.
 
 ## How WordPress is set up
 
-WordPress is used
+WordPress has a famously bad architecture, and as such it is challenging to containerize. While Docker Hub provides an [official WordPress image](https://hub.docker.com/_/wordpress), its file structure made it challenging to run with [WP-CLI](https://wp-cli.org/) bundled in the same image.
 
-This repository is a work-in-progress. Its intention is to use features from Docker and the WordPress CLI to paper over missing features like a plugin manifest (example: `package.json` or `requirements.txt`), and predefined pages. Ideally, another developer should be able to clone this repo and have all the required plugins and static pages for this site. This is most important for a headless WordPress installation where another application may depend on certain pages already existing.
+I opted to suffer through creating my own WordPress image. I opted to use an Apache-based PHP image despite FPM variants being faster: I'm not experience setting up Apache images, and using WordPress with a webserver other than Apache is truly asking for a bad time. I used the WordPress docs [Server Environment page](https://make.wordpress.org/hosting/handbook/server-environment/) to determine what PHP packages needed to be present on the system, and painstakingly installed the packages' system level dependencies via Googling PHP compile errors. After that, copied the WP-CLI and Composer executables from their respective images. If I were containerize WordPress again in the future, I might opt for a [ServerSideUP PHP Image](https://serversideup.net/open-source/docker-php/) instead (Thanks for the tip, [Tony](https://twitter.com/tonysmdev/status/1744003306576306208)).
 
-This was originally built on top of the [official WordPress image](https://github.com/docker-library/wordpress), but is now built on the PHP image because of limitations within the php image itself.
+[Roots Bedrock](https://roots.io/bedrock/) was used to install WordPress. Bedrock provides a more modern WordPress experience, with WP core backed by Composer and plugins backed by Composer + [WordPress Packagist](https://wpackagist.org/). This combination makes WordPress more secure and easier to manage at the expense of having a misconfigured theme/plugin break WordPress.
 
-## Installing WordPress plugins with Composer
+For new endpoints or modifications to WordPress, I opted to put this functionality in the theme's `functions.php` file. Storing this behavior in the theme is considered an anti-pattern in the WordPress community because there's an idea that functionality and presentation should be separate concerns. However, these concerns _are_ separate because this is a headless WordPress app, where the WordPress theme handles all of the functionality.
 
-Install plugins:
-https://wpackagist.org/
+## Potential improvements
 
-Remove capabilities from roles:
-https://developer.wordpress.org/reference/classes/wp_role/remove_cap/
+I realized about half way into this project's development cycle that I would never actually run this project in production, so there are a number of features and improvements that I didn't attempt. They're listed here for posterity.
 
-All capabilities:
-https://wordpress.org/documentation/article/roles-and-capabilities/
+**Graceful template errors in Go.** Go's template rendering currently explodes
 
-## WordPress requirements
+**Implement WordPress pagination.** The web is fast enough to render a few hundred blog posts and tags as static HTML without problems, but a reasonably feature-complete blog should be able to include pagination.
 
-https://make.wordpress.org/hosting/handbook/server-environment/
+**Implement WordPress query params.** WordPress accepts several [URL query parameters](https://codex.wordpress.org/WordPress_Query_Vars) to set [the WP_Query](https://developer.wordpress.org/reference/classes/wp_query/) and filter the results to what the user wants to see. These were not implemented.
 
-## WP REST API Docs
+**Add tests for WordPress and Go.** Surprisingly, WordPress _can_ actually scaffold [theme tests](https://developer.wordpress.org/cli/commands/scaffold/theme-tests/) and [plugin tests](https://developer.wordpress.org/cli/commands/scaffold/plugin-tests/) using the [WP-CLI](https://wp-cli.org/) (more info in this [Smashing Magazine tutorial](https://www.smashingmagazine.com/2017/12/automated-testing-wordpress-plugins-phpunit/)).
 
-https://developer.wordpress.org/rest-api/
+**Removing the `/wp/` prefix from `/wp/wp-admin/` that is added by Bedrock.** I tried this a few times a few different ways, but it seems to cause problems with login post request trying to redirect, which is not supported. A Roots community member seemed to [have some luck in this post](https://discourse.roots.io/t/recommended-subdomain-multisite-nginx-vhost-configuration-with-new-web-layout/1429/12?u=etc), but I couldn't get it to work.
 
-## Caching?
+**WordPress caching.** WordPress is slow. The [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/) is webhost agnostic and seemingly recommended by WordPress, but I'm not sure if it would actually help with REST responses. The [WP REST Cache](https://wordpress.org/plugins/wp-rest-cache/) plugin purportedly helps with this, at least according to this [blog post](https://medium.com/@lodewijkm/our-headless-wordpress-journey-part-i-speeding-up-the-rest-api-aef76a898418).
 
-Seems to be WP recommended and web host agnostic:
-https://wordpress.org/plugins/w3-total-cache/
+**Remove all plugin capabilities from all user roles.** Since plugins are managed via Composer, it would be reasonable to remove users' ability to install plugins via the admin UI. All WordPress [capabilities are listed in the documentation](https://wordpress.org/documentation/article/roles-and-capabilities/), and capabilites can be removed [via PHP code](https://developer.wordpress.org/reference/classes/wp_role/remove_cap/) or using the [WP-CLI cap command](https://developer.wordpress.org/cli/commands/cap/).
 
-## Rewrite URLs to remove /wp/ from /wp/wp-admin/
-
-https://discourse.roots.io/t/recommended-subdomain-multisite-nginx-vhost-configuration-with-new-web-layout/1429/12?u=etc
-
-## Automated testing in WordPress:
-
-https://www.smashingmagazine.com/2017/12/automated-testing-wordpress-plugins-phpunit/
-
-## Things this app doesn't handle:
-
-I realized about half way into this project's development cycle that I would never actually run this project in production, so there are a number of features that I didn't attempt to build
-
-- Graceful template errors: it'll try to render until it explodes.
-- Pagination
-- Query params
-- Tests
+**Automate WordPress setup with the `entrypoint.sh` script.** I had originally intended to automate much of the WordPress setup in the entrypoint script, but I gave up when I realized how painful and ridiculous this project was.
