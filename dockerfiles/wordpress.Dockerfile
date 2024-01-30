@@ -82,7 +82,25 @@ CMD ["apache2-foreground"]
 
 FROM base AS development
 
+# Ensure development works on Linux.
+ARG USER_GID=1234
+ARG USER_UID=1234
+RUN if getent passwd $USER_UID; then userdel "$(getent passwd $USER_UID | cut -d: -f1)"; fi
+RUN if getent group $USER_GID; then groupdel "$(getent group $USER_GID | cut -d: -f1)"; fi
+RUN groupadd --gid $USER_GID app
+RUN useradd --uid $USER_UID --gid $USER_GID --create-home app
+RUN chown -R app:app /var/www/html
+USER app
+
 FROM base AS production
+
+ENV PRODUCTION_UID=1234
+ENV PRODUCTION_GID=1234
+
+RUN groupadd --gid $PRODUCTION_GID app
+RUN useradd --uid $PRODUCTION_UID --gid $PRODUCTION_GID --create-home app
+RUN chown -R app:app /var/www/html
+USER app
 
 COPY wordpress/ .
 RUN composer install
