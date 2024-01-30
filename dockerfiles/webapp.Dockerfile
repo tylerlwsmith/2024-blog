@@ -31,14 +31,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /srv/app/webapp
 
 # Setup /etc/passwd file for production scratch container.
 # https://darrencodes.blog/2023/07/01/configuring-a-non-root-user-in-a-scratch-docker-image/
-ENV BUILD_UID=1234
-RUN useradd --uid $BUILD_UID app && grep app /etc/passwd | grep $BUILD_UID > /srv/passwd
+RUN echo "app:x:1234:1234::/:/bin/false" > /srv/scratch-passwd
 
 FROM scratch AS production
 
 WORKDIR /
 
-COPY --from=build /srv/passwd /etc/passwd
+COPY --from=build /srv/scratch-passwd /etc/passwd
 COPY --from=build --chown=root:root /srv/app/webapp /
 
 USER app
