@@ -43,8 +43,7 @@ Override WordPress's default settings.
 
 ```sh
 docker compose run --rm wordpress wp theme activate headless-wp-site
-docker compose run --rm wordpress wp rewrite structure '/posts/%postname%/'
-docker compose run --rm wordpress wp rewrite structure --tag-base='tags'
+docker compose run --rm wordpress wp rewrite structure '/posts/%postname%/' --tag-base='tags'
 ```
 
 **Optional:** The Go web application uses the NPM package `prettier` and `prettier-plugin-go-template` to format the Go template files. If you have NPM installed on the host machine, run the following command from the project's main directory:
