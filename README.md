@@ -72,13 +72,15 @@ BUILD_TARGET=production docker compose build
 
 **The `docker-compose.yml` file is not completely suitable for building or running production containers.** The services need the `image` property set in the Compose file to push to a container registry, and the services would need the volumes removed to ensure that the files running are from inside the container instead of mounted from the host.
 
+The `WP_ENV` environment variable also would need to be set to production to ensure that Bedrock serves the WordPress site with the appropriate settings.
+
 ## How WordPress is set up
 
 WordPress has a famously bad architecture, and as such it is challenging to containerize. While Docker Hub provides an [official WordPress image](https://hub.docker.com/_/wordpress), its file structure made it challenging to run with [WP-CLI](https://wp-cli.org/) bundled in the same image.
 
 I opted to suffer through creating my own WordPress image. I opted to use an Apache-based PHP image despite FPM variants being faster: I'm not experience setting up Apache images, and using WordPress with a webserver other than Apache is truly asking for a bad time. I used the WordPress docs [Server Environment page](https://make.wordpress.org/hosting/handbook/server-environment/) to determine what PHP packages needed to be present on the system, and painstakingly installed the packages' system level dependencies via Googling PHP compile errors. After that, copied the WP-CLI and Composer executables from their respective images. If I were containerize WordPress again in the future, I might opt for a [ServerSideUP PHP Image](https://serversideup.net/open-source/docker-php/) instead (thanks for the tip, [Tony](https://twitter.com/tonysmdev/status/1744003306576306208)).
 
-[Roots Bedrock](https://roots.io/bedrock/) was used to install WordPress. Bedrock provides a more modern WordPress experience, with WP core backed by Composer and plugins backed by Composer + [WordPress Packagist](https://wpackagist.org/). This combination makes WordPress more secure and easier to manage at the expense of having a misconfigured theme/plugin break WordPress.
+[Roots Bedrock](https://roots.io/bedrock/) was used to install WordPress. Bedrock provides a more modern WordPress experience, with WP core backed by Composer and plugins backed by Composer + [WordPress Packagist](https://wpackagist.org/). When `WP_ENV=production`, users can't install new plugins. This combination of features makes WordPress more secure and easier to manage at the expense of having a Bedrock-incompatable theme/plugin break WordPress.
 
 For new endpoints or modifications to WordPress, I opted to put this functionality in the theme's `functions.php` file. Storing this behavior in the theme is considered an anti-pattern in the WordPress community because functionality and presentation should be separate concerns. However, these concerns _are_ separate because this is a headless WordPress app, and the WordPress theme handles all of the functionality.
 
@@ -97,7 +99,5 @@ I realized about half way into this project's development cycle that this amalga
 **Removing the `/wp/` prefix from `/wp/wp-admin/` that is added by Bedrock.** I tried this a few times a few different ways, but it seems to cause problems with login post request trying to redirect, which is not supported. A Roots community member seemed to [have some luck in this post](https://discourse.roots.io/t/recommended-subdomain-multisite-nginx-vhost-configuration-with-new-web-layout/1429/12?u=etc), but I couldn't get it to work. Changes to the admin url structure will likely require edits to `WP_SITEURL` in `.env`.
 
 **WordPress caching.** WordPress is slow. The [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/) is webhost agnostic and seemingly recommended by WordPress, but I'm not sure if it would actually help with REST responses. The [WP REST Cache](https://wordpress.org/plugins/wp-rest-cache/) plugin purportedly helps with this, at least according to this [blog post](https://medium.com/@lodewijkm/our-headless-wordpress-journey-part-i-speeding-up-the-rest-api-aef76a898418).
-
-**Remove all plugin capabilities from all user roles.** Since plugins are managed via Composer, it would be reasonable to remove users' ability to install plugins via the admin UI. All WordPress [capabilities are listed in the documentation](https://wordpress.org/documentation/article/roles-and-capabilities/), and capabilites can be removed [via PHP code](https://developer.wordpress.org/reference/classes/wp_role/remove_cap/) or using the [WP-CLI cap command](https://developer.wordpress.org/cli/commands/cap/).
 
 **Automate WordPress setup with the `entrypoint.sh` script.** I had originally intended to automate much of the WordPress setup in the entrypoint script, but I gave up when I realized how painful and ridiculous this project was.
