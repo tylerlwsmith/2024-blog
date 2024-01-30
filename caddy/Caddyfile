@@ -3,6 +3,7 @@
 {$SITE_HOSTNAME:localhost:80} {
 	bind 0.0.0.0
 	encode zstd gzip
+
 	@wordpress {
 		path /app/*
 		not path /app/
@@ -12,8 +13,6 @@
 
 		path /wp-json /wp-json/*
 		not path /wp-json/nonce /wp-json/nonce/*
-
-		path /wp-admin /wp-admin/*
 	}
 
 	reverse_proxy @wordpress wordpress:80
