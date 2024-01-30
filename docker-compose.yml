@@ -22,6 +22,9 @@ services:
       dockerfile: ./dockerfiles/webapp.Dockerfile
       context: .
       target: ${BUILD_TARGET:-development}
+      args:
+        USER_UID: ${USER_UID:-1234}
+        USER_GID: ${USER_GID:-1234}
     restart: no
     depends_on:
       - wordpress
