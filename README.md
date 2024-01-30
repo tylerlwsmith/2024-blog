@@ -31,7 +31,7 @@ docker compose run --rm wordpress composer install
 Run the following [WP-CLI](https://wp-cli.org/) commands to create the WordPress site, replacing the placeholder values with the desired username, password and email.
 
 ```sh
-docker-compose run --rm wordpress wp core install \
+docker compose run --rm wordpress wp core install \
     --url="http://localhost" \
     --title="Blog" \
     --admin_user="<your_username>" \
@@ -42,9 +42,9 @@ docker-compose run --rm wordpress wp core install \
 Override WordPress's default settings.
 
 ```sh
-docker-compose run --rm wordpress wp theme activate headless-wp-site
-docker-compose run --rm wordpress wp rewrite structure '/posts/%postname%/'
-docker-compose run --rm wordpress wp rewrite structure --tag-base='tags'
+docker compose run --rm wordpress wp theme activate headless-wp-site
+docker compose run --rm wordpress wp rewrite structure '/posts/%postname%/'
+docker compose run --rm wordpress wp rewrite structure --tag-base='tags'
 ```
 
 **Optional:** The Go web application uses the NPM package `prettier` and `prettier-plugin-go-template` to format the Go template files. If you have NPM installed on the host machine, run the following command from the project's main directory:
