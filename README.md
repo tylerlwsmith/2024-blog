@@ -85,7 +85,7 @@ For new endpoints or modifications to WordPress, I opted to put this functionali
 
 ## Potential improvements
 
-I realized about half way into this project's development cycle that I would never actually run this project in production, so there are a number of features and improvements that I didn't attempt. They're listed here for posterity.
+I realized about half way into this project's development cycle that this amalgamation was far too ridiculous to ever run in production. As a result, there are many features and improvements that I didn't pursue. They are listed here for posterity.
 
 **Graceful template errors in Go.** Go's template rendering currently explodes
 
