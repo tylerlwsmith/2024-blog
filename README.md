@@ -12,9 +12,9 @@ After cloning the project, copy the `.env.example` file to `.env` by running the
 cp .env.example .env
 ```
 
-Once copied, navigate to the following URL to get salts for WordPress (this is jank and insecure, just like everything in WordPress) and copy them into the `.env` file:
+**IMPORTANT: After copying the file, get salts from https://roots.io/salts.html and copy them into `.env`** (yes: this is jank and insecure, just like everything in WordPress)**.**
 
-https://roots.io/salts.html
+**If you're running Linux, update `USER_UID` and `USER_GID` to your `.env` file to negate Linux permission issues.** The appropriate values for these can be obtained by running `id -u` and `id -g` respectively.
 
 Next, run the following commands from the main project directory to build the docker images:
 
@@ -60,6 +60,10 @@ docker compose up
 ```
 
 You can then visit the site a http://localhost.
+
+## Linux development
+
+Linux
 
 ## Building production(ish) images
 
