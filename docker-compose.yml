@@ -50,20 +50,14 @@ services:
       WP_SITEURL: ${WP_SITEURL:-http://localhost:80/wp}
       WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
 
-      AUTH_KEY: '<pHod%g37<t7<G^MC3XO().=.oH-ICqZ6NM.b;qGf9IV#emF-hF)*r!ggea!Zm8P'
-      SECURE_AUTH_KEY: '1n3>|iUo7.S{(gH6Y:`P!)8ZbU?DPt=/=F/DF{p3VQ#$hg3.D>bl0M5mwN)$yHm9'
-      LOGGED_IN_KEY: '9767Z/6I>,!e0y9bcK#MV|FPuT|eZK%?awYz4kot@+L%.ILC04@Sq5AGyo6+>,;@'
-      NONCE_KEY: 'd8,Ev>)+2bmIGI(>Zk<,JV|m[q3uJeH2x*/:*tNg?LuQ7h8r5m1DQ>TVlYL9uN@D'
-      AUTH_SALT: '8nsdWF6BMiPBLo1H|AzRq,:YUPl/X0xW$.RJ#a?7j2b_Ay3DGE{K7g_!HbL3e#VH'
-      SECURE_AUTH_SALT: 'dfD!kpqb:q>&`cF<lWU6=b.5]?7(B|iJeB9[GL?.C84B/{0+o.eqX0XtC^1h!){4'
-      LOGGED_IN_SALT: '3:oRBKdT?jCH.bN!Caw]u)i9Z%V:PF3y`}-[Ht`1N#zp/A)w?YRybI9!GXV(^UX&'
-      NONCE_SALT: '[hnA;=h/P:^?+Z_DvDx55xV<{UC@b2,o_b-Sl6Yz7FiDnSFYyyUj!lyk>EKNNrLd'
-
-      # The following variables are only used during the first container boot.
-      WORDPRESS_URL: ${WORDPRESS_URL:-localhost:80}
-      WORDPRESS_USERNAME: ${WP_USERNAME:-admin}
-      WORDPRESS_PASSWORD: ${WP_PASSWORD:-password}
-      WORDPRESS_EMAIL: ${WP_EMAIL:-test@example.com}
+      AUTH_KEY: ${AUTH_KEY}
+      SECURE_AUTH_KEY: ${SECURE_AUTH_KEY}
+      LOGGED_IN_KEY: ${LOGGED_IN_KEY}
+      NONCE_KEY: ${NONCE_KEY}
+      AUTH_SALT: ${AUTH_SALT}
+      SECURE_AUTH_SALT: ${SECURE_AUTH_SALT}
+      LOGGED_IN_SALT: ${LOGGED_IN_SALT}
+      NONCE_SALT: ${NONCE_SALT}
     volumes:
       - ./wordpress:/var/www/html/
       - ./wordpress/entrypoint.sh:/var/www/html/entrypoint.sh
@@ -72,8 +66,8 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-wordpress}
-      MYSQL_USER: ${DB_USERNAME:-admin}
+      MYSQL_DATABASE: ${DB_NAME:-wordpress}
+      MYSQL_USER: ${DB_USER:-admin}
       MYSQL_PASSWORD: ${DB_PASSWORD:-password}
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
