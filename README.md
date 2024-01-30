@@ -88,7 +88,7 @@ For new endpoints or modifications to WordPress, I opted to put this functionali
 
 I realized about half way into this project's development cycle that this amalgamation was far too ridiculous to ever run in production. As a result, there are many features and improvements that I didn't pursue. They are listed here for posterity.
 
-**Graceful template errors in Go.** Go's template rendering currently explodes
+**Graceful template errors in Go.** By default, errors in Go templates crash the template mid-render. These templates can [be written to a buffer](https://medium.com/@leeprovoost/dealing-with-go-template-errors-at-runtime-1b429e8b854a) then flushed to the response only if they are successful, with a fallback error page if they are not.
 
 **Implement WordPress pagination.** The web is fast enough to render a few hundred blog posts and tags as static HTML without problems, but a reasonably feature-complete blog should be able to include pagination.
 
