@@ -60,10 +60,6 @@ docker compose up
 
 You can then visit the site a http://localhost.
 
-## Linux development
-
-Linux
-
 ## Building production(ish) images
 
 The Dockerfiles used in this app are multi-stage. For the `development` state, it only builds the images to the point where the files can be mounted from the host to the container, but it does not copy the source files into the container.
