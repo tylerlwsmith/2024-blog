@@ -1,4 +1,4 @@
-# Headless WordPress with Go front-end (WIP)
+# Headless WordPress with Go front-end
 
 **This project was a huge mistake.** I built this as a relatively new Go programmer, thinking I could build a blog faster _and_ get more experience with Go if I built a Go front-end for headless WordPress via the [WordPress REST API](https://developer.wordpress.org/rest-api/). Instead, I ran into every sharp edge of WordPress. I completed the project for the sake of finishing it, but I certainly wouldn't recommend using this.
 
