@@ -60,7 +60,7 @@ To start the app, run the following command:
 docker compose up
 ```
 
-You can then visit the site a http://localhost. You can visit the WordPress admin at http://localhost/wp/wp-admin/
+You can then visit the site a http://localhost. You can visit the WordPress admin at http://localhost/wp/wp-admin/.
 
 ## Building production(ish) images
 
