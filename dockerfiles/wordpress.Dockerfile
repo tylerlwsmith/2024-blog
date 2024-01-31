@@ -102,5 +102,5 @@ RUN useradd --uid $PRODUCTION_UID --gid $PRODUCTION_GID --create-home app
 RUN chown -R app:app /var/www/html
 USER app
 
-COPY wordpress/ .
+COPY --chown=app:app wordpress/ .
 RUN composer install

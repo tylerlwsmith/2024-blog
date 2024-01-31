@@ -43,7 +43,7 @@ Override WordPress's default settings.
 
 ```sh
 docker compose run --rm wordpress wp theme activate headless-wp-site
-docker compose run --rm wordpress wp rewrite structure '/posts/%postname%/' --tag-base='tags'
+docker compose run --rm wordpress wp rewrite structure '/posts/%postname%/' --tag-base='tags' --hard
 ```
 
 **Optional:** The Go web application uses the NPM package `prettier` and `prettier-plugin-go-template` to format the Go template files. If you have NPM installed on the host machine, run the following command from the project's main directory:
@@ -62,17 +62,21 @@ You can then visit the site a http://localhost.
 
 ## Building production(ish) images
 
-The Dockerfiles used in this app are multi-stage. For the `development` state, it only builds the images to the point where the files can be mounted from the host to the container, but it does not copy the source files into the container.
+The Dockerfiles used in this project are multi-stage. For the `development` state, it only builds the images to the point where the files can be mounted from the host to the container, but it does not copy the source files into the container.
 
-You can build full production(ish) containers using the following command:
+You can build production(ish) containers using the following command:
 
 ```sh
-BUILD_TARGET=production docker compose build
+docker compose --file=docker-compose.prod.yml build
 ```
 
-**The `docker-compose.yml` file is not completely suitable for building or running production containers.** The services need the `image` property set in the Compose file to push to a container registry, and the services would need the volumes removed to ensure that the files running are from inside the container instead of mounted from the host.
+**The `docker-compose.prod.yml` file is not _completely_ suitable for building production containers: the `image` property must be set for each service in the Compose file in order to push the built images to a container registry.**
 
-The `WP_ENV` environment variable also would need to be set to production to ensure that Bedrock serves the WordPress site with the appropriate settings.
+To run the production(ish) containers locally, run the following command:
+
+```sh
+docker compose --file=docker-compose.prod.yml up
+```
 
 ## How WordPress is set up
 

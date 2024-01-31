@@ -1,2 +1,43 @@
-.env
-.example.env
+###############################################################################
+# Project                                                                     #
+###############################################################################
+
+/.env
+/.example.env
+
+
+###############################################################################
+# WordPress                                                                   #
+###############################################################################
+
+# Application
+/wordpress/web/app/plugins/*
+!/wordpress/web/app/plugins/.gitkeep
+/wordpress/web/app/mu-plugins/*
+!/wordpress/web/app/mu-plugins/bedrock-autoloader.php
+/wordpress/web/app/themes/twentytwentyfour/
+/wordpress/web/app/upgrade
+/wordpress/web/app/uploads/*
+!/wordpress/web/app/uploads/.gitkeep
+/wordpress/web/app/cache/*
+
+# WordPress
+/wordpress/web/wp
+/wordpress/web/.htaccess
+
+# Logs
+/wordpress/**/*.log
+
+# Composer
+/wordpress/vendor
+
+# WP-CLI
+/wordpress/wp-cli.local.yml
+
+
+###############################################################################
+# Webapp                                                                      #
+###############################################################################
+
+/webapp/node_modules
+/webapp/tmp

@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  caddy:
+    build:
+      dockerfile: dockerfiles/caddy.Dockerfile
+      context: .
+      target: ${BUILD_TARGET:-production}
+    restart: "no"
+    ports:
+      - 127.0.0.1:80:80
+      - 127.0.0.1:443:443
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      SITE_HOSTNAME: localhost:80
+
+  webapp:
+    build:
+      dockerfile: ./dockerfiles/webapp.Dockerfile
+      context: .
+      target: ${BUILD_TARGET:-production}
+      args:
+        USER_UID: ${USER_UID:-1234}
+        USER_GID: ${USER_GID:-1234}
+    restart: "no"
+    depends_on:
+      - wordpress
+
+  wordpress:
+    build:
+      dockerfile: ./dockerfiles/wordpress.Dockerfile
+      context: .
+      target: ${BUILD_TARGET:-production}
+      args:
+        USER_UID: ${USER_UID:-1234}
+        USER_GID: ${USER_GID:-1234}
+    restart: "no"
+    depends_on:
+      - database
+    environment:
+      DB_HOST: ${DB_HOST:-database}
+      DB_NAME: ${DB_DATABASE:-wordpress}
+      DB_USER: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+
+      WP_ENV: development
+      WP_HOME: ${WP_HOME:-http://localhost:80}
+      WP_SITEURL: ${WP_SITEURL:-http://localhost:80/wp}
+      WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
+
+      AUTH_KEY: ${AUTH_KEY}
+      SECURE_AUTH_KEY: ${SECURE_AUTH_KEY}
+      LOGGED_IN_KEY: ${LOGGED_IN_KEY}
+      NONCE_KEY: ${NONCE_KEY}
+      AUTH_SALT: ${AUTH_SALT}
+      SECURE_AUTH_SALT: ${SECURE_AUTH_SALT}
+      LOGGED_IN_SALT: ${LOGGED_IN_SALT}
+      NONCE_SALT: ${NONCE_SALT}
+
+  database:
+    image: mysql:8.0
+    restart: "no"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-wordpress}
+      MYSQL_USER: ${DB_USER:-admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - 127.0.0.1:3306:3306
+
+volumes:
+  wp-content:
+  database:
+  caddy_data:
+  caddy_config:
