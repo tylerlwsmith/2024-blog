@@ -45,7 +45,7 @@ services:
       DB_USER: ${DB_USERNAME:-admin}
       DB_PASSWORD: ${DB_PASSWORD:-password}
 
-      WP_ENV: development
+      WP_ENV: production
       WP_HOME: ${WP_HOME:-http://localhost:80}
       WP_SITEURL: ${WP_SITEURL:-http://localhost:80/wp}
       WP_ENVIRONMENT_TYPE: ${WP_ENVIRONMENT_TYPE:-local}
