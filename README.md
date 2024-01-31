@@ -86,7 +86,7 @@ The Go app uses [Gorilla Mux](https://github.com/gorilla/mux) for routing, and i
 
 ## How Caddy is set up
 
-Caddy acts a reverse proxy sitting in-front of both Go and WordPress. It proxies the `/app/*`, `/wp/*` and `/wp-json/*` paths to WordPress, and all other paths to the Go front-end. It redirects `www` paths to their non-`www` counterpart. When the `SITE_HOSTNAME` environment variable is set to a real domain (not `localhost`), Caddy will automatically provision TLS certificates.
+Caddy acts a reverse proxy sitting in-front of both Go and WordPress. It proxies the `/app/*`, `/wp/*` and `/wp-json/*` paths to WordPress, and all other paths to the Go front-end. It redirects `www` paths to their non-`www` counterpart. When the `SITE_HOSTNAME` environment variable is set to a real domain (not `localhost`) on a publicly-accessible server, Caddy will automatically provision TLS certificates.
 
 ## How WordPress is set up
 
