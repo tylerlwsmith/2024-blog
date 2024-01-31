@@ -80,6 +80,10 @@ To run the production(ish) containers locally, run the following command:
 docker compose --file=docker-compose.prod.yml up
 ```
 
+## How Go is set up
+
+The Go app uses [Gorilla Mux](https://github.com/gorilla/mux) for routing, and it embeds the CSS + template files into the compiled binary. The production stage of the app's Dockerfile puts the binary in a [scratch](https://hub.docker.com/_/scratch) image running as a non-root user to achieve the smallest container size possible.
+
 ## How WordPress is set up
 
 WordPress has a famously bad architecture, and as such it is challenging to containerize. While Docker Hub provides an [official WordPress image](https://hub.docker.com/_/wordpress), its file structure made it challenging to run with [WP-CLI](https://wp-cli.org/) bundled in the same image.
