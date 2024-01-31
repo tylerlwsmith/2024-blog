@@ -96,7 +96,7 @@ I opted to suffer through creating my own WordPress image. I opted to use an Apa
 
 [Roots Bedrock](https://roots.io/bedrock/) was used to install WordPress. Bedrock provides a more modern WordPress experience, with WP core backed by Composer and plugins backed by Composer + [WordPress Packagist](https://wpackagist.org/). When `WP_ENV=production`, users can't install new plugins. This combination of features makes WordPress more secure and easier to manage at the expense of having a Bedrock-incompatable theme/plugin break WordPress.
 
-For new endpoints or modifications to WordPress, I opted to put this functionality in the theme's `functions.php` file. Storing this behavior in the theme is considered an anti-pattern in the WordPress community because functionality and presentation should be separate concerns. However, these concerns _are_ separate because this is a headless WordPress app, and the WordPress theme handles all of the functionality.
+For new endpoints and modifications to WordPress, I opted to put this functionality in the theme's `functions.php` file. Storing this behavior in the theme is considered an anti-pattern in the WordPress community because functionality and presentation should be separate concerns. However, these concerns _are_ separate because this is a headless WordPress app, and the WordPress theme handles all of the functionality.
 
 ## Potential improvements
 
