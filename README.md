@@ -60,7 +60,7 @@ To start the app, run the following command:
 docker compose up
 ```
 
-You can then visit the site a http://localhost.
+You can then visit the site a http://localhost. You can visit the WordPress admin at http://localhost/wp/wp-admin/
 
 ## Building production(ish) images
 
@@ -83,6 +83,10 @@ docker compose --file=docker-compose.prod.yml up
 ## How Go is set up
 
 The Go app uses [Gorilla Mux](https://github.com/gorilla/mux) for routing, and it embeds the CSS + template files into the compiled binary. The production stage of the app's Dockerfile puts the binary in a [scratch](https://hub.docker.com/_/scratch) image running as a non-root user to achieve the smallest container size possible.
+
+## How Caddy is set up
+
+Caddy acts a reverse proxy sitting in-front of both Go and WordPress. It proxies the `/app/*`, `/wp/*` and `/wp-json/*` paths to WordPress, and all other paths to the Go front-end. It redirects `www` paths to their non-`www` counterpart. When the `SITE_HOSTNAME` environment variable is set to a real domain (not `localhost`), Caddy will automatically provision TLS certificates.
 
 ## How WordPress is set up
 
